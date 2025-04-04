@@ -1,5 +1,5 @@
 
-CREATE procedure BELL_INC_UPD_MASTER_ITEMS  
+alter procedure BELL_INC_UPD_MASTER_ITEMS  
 @ITEMCODE AS INTEGER,      
 @ITEMNAME as varchar(50),      
 @CATEGORY AS VARCHAR(30),  

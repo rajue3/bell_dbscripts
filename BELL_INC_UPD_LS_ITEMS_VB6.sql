@@ -1,4 +1,4 @@
-CREATE procedure BELL_INC_UPD_LS_ITEMS  
+alter  procedure BELL_INC_UPD_LS_ITEMS  
 @BILLDATE as DATE,  
 @AREA as varchar(30),  
 @ITEMCODE AS integer,  

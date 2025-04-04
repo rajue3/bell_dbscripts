@@ -1,4 +1,4 @@
-select * FROM bhavani_ER_Bills 
+/* select * FROM bhavani_ER_Bills 
 WHERE AREA='NEZAR'  AND CONVERT(varchar(10),BILLDATE,102) = CONVERT(varchar(10),'2025.01.16',102)  
 
 select * FROM BELL_LS WHERE AREA='NEZAR'  AND CONVERT(varchar(10),BILLDATE,102) = CONVERT(varchar(10),'2025.01.16',102)  
@@ -9,7 +9,8 @@ select A.ITEMNAME,SUM(PACKETS) AS QTY,ISNULL(B.R_B,0) AS RET_QTY,A.AREA
 	  where A.AREA='NEZAR' 
 	  AND CONVERT(varchar(10),A.BILLDATE,102) = CONVERT(varchar(10),'2025.01.16',102)  
 	  GROUP BY A.ITEMCODE,A.ITEMNAME,A.AREA,B.R_B,A.BILLDATE ORDER BY A.ITEMCODE  
-	  
+	 */
+	 
 -- BELL_GET_LS_ItemsByArea_Date 'ShopWiseTotalSales','BHADRACHALAM','BHARATHI RAJ (BCM)(ASHWAPUR)','15-Jan-2025'  
 -- BELL_GET_LS_ItemsByArea_Date 'ShopWiseTotalSales','BAYYARAM ','AMBIKA K/M (BYR)(MRO)','16-Jan-2025'  
 -- BELL_GET_LS_ItemsByArea_Date '','BAYYARAM ','','16-Jan-2025'  
