@@ -3,11 +3,6 @@ select * from Bell_Cust_Master WHERE line='SAI Ram Warangal'
 select * from Bell_Cust_Master WHERE status<>'DELETED'
 select * from bhavani_ER_Bills  order by actiondate desc
 
-CAKE TIME 5RS
-1600
-1594
-BELGIO 2RS
-430
 -- select * FROM Bell_Cust_Master  where area in ('bazar','Nezar','Geat','Bhavani')
 -- select * from bhavani_ER_Bills  where billdate = '2025-Jan-07' AND AREA='BAZAR' AND BILLNUMBER=1  
 --update bhavani_ER_Bills  set PRATE=RATE-RATE*0.05 WHERE PRATE ISNULL  

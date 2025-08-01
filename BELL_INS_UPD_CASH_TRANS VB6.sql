@@ -27,6 +27,7 @@ BEGIN
 	BEGIN
 			declare @old_cashid as int, @due_billdate as date,@partyname as varchar(50)			
 			select @old_cashid=cashid,@due_billdate=billdate,@partyname=partyname from tbllinesalesmanpendings where id=@seq_no
+			--select cashid,billdate,partyname from tbllinesalesmanpendings where id=72
 			
 			set @seq_no = (select count(1) from BELL_DAILYCASHFLOW where PAIDDATE=@PAIDDATE and TransType='IN') 
 			Insert into BELL_DAILYCASHFLOW(PAIDDATE,CATEGORY,PURPOSE,PAIDTOPERSON,AMOUNT,PAYMENT_MODE,MOREDETAILS,TRANSTYPE,[STATUS],USERNAME,FILEINFO,seq_no) 

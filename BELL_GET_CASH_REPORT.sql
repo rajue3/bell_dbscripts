@@ -7,6 +7,15 @@ select * from tblvansalesbill_details WHERE BILLDATE='20250329' AND CASHID=688
 UPDATE tblvansalesbill_details SET MILEAGE=6.9 WHERE BILLDATE='20250329' AND CASHID=688
 
 */
+
+
+-- BELL_GET_SM_ONLINE_TRANSFERS  '28-Mar-2025','','','','30-Mar-2025',0,0,'SM_NAMES'
+-- BELL_GET_SM_ONLINE_TRANSFERS  '28-Mar-2025','','BHASKAR','','',0,0,'DUES_GROUPBY_SM'
+-- BELL_GET_SM_ONLINE_TRANSFERS  '','','','','',0,0,'DUES_BY_LINE'
+
+-- BELL_GET_SM_ONLINE_TRANSFERS  '28-Mar-2025','','','','30-Mar-2025',0,0,'DUES_BY_LINE'
+-- BELL_GET_SM_ONLINE_TRANSFERS  '','BELLAMPALLY','','','',0,0,'DUES_BY_LINE'
+
 -- BELL_GET_SM_ONLINE_TRANSFERS  '28-Mar-2025','','','','30-Mar-2025',0,0,'LINE_SALES'
 -- BELL_GET_SM_ONLINE_TRANSFERS  '28-Mar-2025','','','','All',0,1,'SM_ONLINE'
 -- BELL_GET_SM_ONLINE_TRANSFERS  '22-Mar-2025','Bazar','ss','test','All',1,0,''
@@ -17,10 +26,10 @@ alter PROCEDURE BELL_GET_SM_ONLINE_TRANSFERS
 @LINE AS VARCHAR(50),
 @SALESMAN AS VARCHAR(30),
 @PURPOSE AS VARCHAR(30),
-@PAYMODE AS VARCHAR(12),  -- using it for date2 for other report
+@PAYMODE AS VARCHAR(12),  -- using it for date2 for other report AND is passing with correct date format like dd/MMM/yyyy
 @STATUS AS int,
 @ALLDATE AS int,
-@REPORTTYPE AS VARCHAR(15)  -- EXTRA FOR DIFF REPORTS
+@REPORTTYPE AS VARCHAR(25)  -- EXTRA FOR DIFF REPORTS
 AS
 BEGIN
 	DECLARE @STRSQLWHERE AS nVARCHAR(500),@SCRIPT AS nVARCHAR(MAX)
@@ -112,6 +121,55 @@ BEGIN
 				set @SCRIPT = @SCRIPT + @STRSQLWHERE + ' order by Line,Billdate '
 				print @SCRIPT
 				exec sp_executesql @SCRIPT;
+	end
+	if @REPORTTYPE='DUES_GROUPBY_SM'
+	Begin
+		PRINT 'PAYMENT_DUES_BY_SM'
+				set @SCRIPT = 'Select salesman,sum(amount_due) as Due, isnull((select sum(Amount) from BELL_LineSalesManPayments B where A.SalesMan=B.SalesMan),0) as Paid
+				,(sum(amount_due) - isnull((select sum(Amount) from BELL_LineSalesManPayments B where A.SalesMan=B.SalesMan),0) ) as Balance 
+				from tblLineSalesManPendings A WHERE 1=1 '
+				set @STRSQLWHERE=''
+				if @LINE <> '' 
+				begin
+					set @STRSQLWHERE = @STRSQLWHERE + ' AND Line='''+ @LINE +''''
+				End
+				If Len(@SALESMAN) > 0
+				begin
+					set @STRSQLWHERE = @STRSQLWHERE + ' AND SalesMan like ''%' + @SALESMAN + '%'''
+				End
+				set @SCRIPT = @SCRIPT + @STRSQLWHERE + '  Group by salesman order by salesman'
+				print @SCRIPT
+				exec sp_executesql @SCRIPT;
+
+	End
+	if @REPORTTYPE='DUES_BY_LINE'
+	begin
+			set @SCRIPT = 'Select ID, cashid as due_cashid,line,salesman,partyname,billdate,mobile,amount_due,
+				isnull((select sum(Amount) from BELL_LineSalesManPayments B where A.Line=B.Line and A.SalesMan=B.SalesMan and A.PartyName=B.PartyName and a.billdate=b.billdate),0) as Amt_Paid,
+				(amount_due - isnull((select sum(Amount) from BELL_LineSalesManPayments B where A.SalesMan=B.SalesMan and A.PartyName=B.PartyName and a.billdate=b.billdate),0) ) as Balance_Amt from tblLineSalesManPendings A where 1=1 '	
+		
+			set @STRSQLWHERE=''
+
+				if @LINE <> '' 
+				begin
+					set @STRSQLWHERE = @STRSQLWHERE + ' AND Line='''+ @LINE +''''
+				End
+				If Len(@SALESMAN) > 0
+				begin
+					set @STRSQLWHERE = @STRSQLWHERE + ' AND SalesMan like ''%' + @SALESMAN + '%'''
+				End
+				If @BILLDATE <> '' 
+				begin
+					set @STRSQLWHERE = @STRSQLWHERE + ' AND Billdate=''' + @BILLDATE + ''''
+				 end				
+				--print @STRSQLWHERE
+				set @SCRIPT = @SCRIPT + @STRSQLWHERE + ' order by Billdate desc'
+				print @SCRIPT
+				exec sp_executesql @SCRIPT;
+	end
+	if @REPORTTYPE='SM_NAMES'  -- List of distinct Sales mans from pendings table
+	begin
+		SELECT DISTINCT salesman FROM tblLineSalesManPendings  ORDER BY salesman
 	end
 end	
 GO
