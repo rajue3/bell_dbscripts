@@ -1,4 +1,13 @@
 /*
+
+select distinct a.ID,a.category,a.paiddate,a.purpose,a.paidtoperson,a.amount,a.payment_mode,a.transtype,isnull(a.moredetails,'') moredetails,a.actiondate,a.username,
+		isnull(a.fileinfo,'') FileInfo,a.SEQ_NO,isnull(a.due_date,'') due_date,a.status 		from bell_dailycashflow a
+		
+		select 
+		isnull(b.id,0) as VID,isnull(TOTALAMT, 0) as TOTALAMT,isnull(TOTCASH_IN,0) as TOTCASH_IN,isnull(TOTCASH_OUT,0) as TOTCASH_OUT,isnull(GRANDTOTAL,0) as GRANDTOTAL,    
+		isnull(TOTAL_DUE,0) as TOTAL_DUE,isnull(TOTAL_KM,0) as TOTAL_KM, isnull(DIESEL,0) as DIESEL,isnull(MILEAGE,0) as MILEAGE,isnull(Vehicle_No,'') as Vehicle_No  
+		,isnull(b.Driver,'') as Driver from tblvansalesbill_details b 
+		
 update tblLineSalesManPendings  set Received='N', Actiondate=getdate()  where ID=328 
 
 SELECT b.id a.paiddate,a.purpose,b.salesman,b.partyname,b.Amount_Due from bell_dailycashflow A inner join tblLineSalesManPendings B on A.ID=B.CashID     
@@ -16,23 +25,24 @@ SELECT b.id a.paiddate,a.purpose,b.salesman,b.partyname,b.Amount_Due from bell_d
 -- BELL_GET_CASH_TRANS_BY_DATE_new '20250404','TOT_OB'    
 -- BELL_GET_CASH_TRANS_BY_DATE_new '20250407','TOT_OB'    
   
--- BELL_GET_CASH_TRANS_BY_DATE_new '20250407','TOT_OB_OLD'    
--- BELL_GET_CASH_TRANS_BY_DATE_new '20250405','TOT_OB_OLD'    
+-- BELL_GET_CASH_TRANS_BY_DATE_new '20250820','TOT_OB',0
+-- BELL_GET_CASH_TRANS_BY_DATE_new '21-Aug-2025','TOT_OB',0    
   
 -- BELL_GET_CASH_TRANS_BY_DATE_new '20250404','TOT_OB_OLD'    
   
 -- BELL_GET_CASH_TRANS_BY_DATE '28-Mar-2025','TOTALS'    
--- BELL_GET_CASH_TRANS_BY_DATE '14-Mar-2025','WEB2LOCAL'    
--- BELL_GET_CASH_TRANS_BY_DATE '22-Mar-2025','dues'    
--- BELL_GET_CASH_TRANS_BY_DATE '22-Mar-2025','TOT_OB'    
--- BELL_GET_CASH_TRANS_BY_DATE '22-Mar-2025','EXPENS'    
--- BELL_GET_CASH_TRANS_BY_DATE '17-Mar-2025','ONLINE'    
--- BELL_GET_CASH_TRANS_BY_DATE '01-Apr-2025','OUT'    
--- BELL_GET_CASH_TRANS_BY_DATE '02-Apr-2025','IN'    
+-- BELL_GET_CASH_TRANS_BY_DATE_NEW '14-Mar-2025','WEB2LOCAL' ,-1   
+-- BELL_GET_CASH_TRANS_BY_DATE_NEW '01-Aug-2025','WEB2LOCAL' 
+-- BELL_GET_CASH_TRANS_BY_DATE_NEW '22-Mar-2025','dues'    
+-- BELL_GET_CASH_TRANS_BY_DATE_NEW '22-Mar-2025','TOT_OB'    
+-- BELL_GET_CASH_TRANS_BY_DATE_NEW '22-Mar-2025','EXPENS'    
+-- BELL_GET_CASH_TRANS_BY_DATE_NEW '17-Mar-2025','ONLINE'    
+-- BELL_GET_CASH_TRANS_BY_DATE_NEW '01-Apr-2025','OUT'    
+-- BELL_GET_CASH_TRANS_BY_DATE_NEW '02-Apr-2025','IN'    
 alter PROCEDURE BELL_GET_CASH_TRANS_BY_DATE_NEW   
 @BILLDATE AS DATE,    
 @TRANSTYPE AS VARCHAR(10),    
-@CashID as int = 0    
+@CashID as int = 0    -- if CashID=-1 and TransType='WEB2LOCAL' then it will retrieve all records iresspective of BillDate
 AS    
 BEGIN    
  IF @TRANSTYPE = 'IN' OR @TRANSTYPE = 'OUT'     
@@ -100,14 +110,13 @@ BEGIN
  set @PrevDate = CONVERT(date,dateadd(day,-1,@BILLDATE),101)    
  --SELECT DATENAME(weekday, CAST('2025-04-08' AS DATE)) AS Weekday;  
  if  DATENAME(weekday, CAST(@PrevDate AS DATE)) = 'Sunday'   set @PrevDate = CONVERT(date,dateadd(day,-2,@BILLDATE),101)    
-    
-    if (select count(1) from bell_tblCashApproval where CONVERT(date,TransDate,101) = CONVERT(date,@PrevDate,101)  ) > 0   
- begin  
-   print 'data retrieved from bell_tblCashApproval '  
-   -- previous day cashinhand will become open balance for next day  
-   --select OpenBal,TotCashInHand,totCashIn,totCashOut from bell_tblCashApproval where CONVERT(date,TransDate,101) = CONVERT(date,dateadd(day,-1,@BILLDATE),101)  
-   select TotCashInHand as OpenBal,TRANSDATE from bell_tblCashApproval where CONVERT(date,TransDate,101) = CONVERT(date,@PrevDate,101)  
- end  
+	 if (select count(1) from bell_tblCashApproval where CONVERT(date,TransDate,101) = CONVERT(date,@PrevDate,101)  ) > 0   
+	 begin  
+	   print 'data retrieved from bell_tblCashApproval '  
+	   -- previous day cashinhand will become open balance for next day  
+	   --select OpenBal,TotCashInHand,totCashIn,totCashOut from bell_tblCashApproval where CONVERT(date,TransDate,101) = CONVERT(date,dateadd(day,-1,@BILLDATE),101)  
+	   select TotCashInHand as OpenBal,TRANSDATE from bell_tblCashApproval where CONVERT(date,TransDate,101) = CONVERT(date,@PrevDate,101)  
+	 end  
  else  
  begin  
    print 'data retrieved from InitialOpenbal + totalIN - totalOUT '  
@@ -127,13 +136,27 @@ BEGIN
  END    
  ELSE IF @TRANSTYPE='WEB2LOCAL'    
  BEGIN    
-  select a.*,b.id as VID,isnull(TOTALAMT, 0) as TOTALAMT,isnull(TOTCASH_IN,0) as TOTCASH_IN,isnull(TOTCASH_OUT,0) as TOTCASH_OUT,isnull(GRANDTOTAL,0) as GRANDTOTAL,    
-  isnull(TOTAL_DUE,0) as TOTAL_DUE,isnull(TOTAL_KM,0) as TOTAL_KM, isnull(DIESEL,0) as DIESEL,isnull(MILEAGE,0) as MILEAGE,isnull(Vehicle_No,'') as Vehicle_No    
-  from bell_dailycashflow a left join tblvansalesbill_details b on a.id=b.cashid where   
-  -- paiddate=@BILLDATE   
-  CONVERT(nvarchar(10),PAIDDATE,101) = CONVERT(nvarchar(10),@BILLDATE,101)  
-  order by a.id     
-  -- where paiddate>=@BILLDATE  and paiddate<='20250329' order by a.id     
+	IF @CashID = -1   -- TO RETRIEVE ALL RECORDS FOR BACKUP
+	BEGIN
+		PRINT 'CashID=-1 and fetching all records'
+		select a.ID,a.category,a.paiddate,a.purpose,a.paidtoperson,a.amount,a.payment_mode,a.transtype,isnull(a.moredetails,'') moredetails,a.actiondate,a.username,
+		isnull(a.fileinfo,'') FileInfo,a.SEQ_NO,isnull(a.due_date,'') due_date,a.status
+		,isnull(b.id,0) as VID,isnull(TOTALAMT, 0) as TOTALAMT,isnull(TOTCASH_IN,0) as TOTCASH_IN,isnull(TOTCASH_OUT,0) as TOTCASH_OUT,isnull(GRANDTOTAL,0) as GRANDTOTAL,    
+		isnull(TOTAL_DUE,0) as TOTAL_DUE,isnull(TOTAL_KM,0) as TOTAL_KM, isnull(DIESEL,0) as DIESEL,isnull(MILEAGE,0) as MILEAGE,isnull(Vehicle_No,'') as Vehicle_No  
+		,isnull(b.Driver,'') as Driver
+		from bell_dailycashflow a left join tblvansalesbill_details b on a.id=b.cashid order by a.id
+    END
+	ELSE
+	BEGIN
+			select a.ID,a.category,a.paiddate,a.purpose,a.paidtoperson,a.amount,a.payment_mode,a.transtype,isnull(a.moredetails,'') moredetails,a.actiondate,a.username,
+			isnull(a.fileinfo,'') FileInfo,a.SEQ_NO,isnull(a.due_date,'') due_date,a.status
+			,isnull(b.id,0) as VID,isnull(TOTALAMT, 0) as TOTALAMT,isnull(TOTCASH_IN,0) as TOTCASH_IN,isnull(TOTCASH_OUT,0) as TOTCASH_OUT,isnull(GRANDTOTAL,0) as GRANDTOTAL,    
+			isnull(TOTAL_DUE,0) as TOTAL_DUE,isnull(TOTAL_KM,0) as TOTAL_KM, isnull(DIESEL,0) as DIESEL,isnull(MILEAGE,0) as MILEAGE,isnull(Vehicle_No,'') as Vehicle_No  
+			,isnull(b.Driver,'') as Driver
+			from bell_dailycashflow a left join tblvansalesbill_details b on a.id=b.cashid where   
+			CONVERT(nvarchar(10),PAIDDATE,101) = CONVERT(nvarchar(10),@BILLDATE,101)   order by a.id     
+			-- where paiddate>=@BILLDATE  and paiddate<='20250329' order by a.id     
+	  END
  END    
  ELSE IF @TRANSTYPE='TOTALS'    
  BEGIN    

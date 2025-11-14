@@ -1,7 +1,6 @@
 --  Select *,amount as Amt_Paid, (-1*amount) as Balance_Amt from BELL_LineSalesManPayments where  
   --line=(case when @LINE='' then line else @LINE end)  and salesman=(case when @SALESMAN='' then salesman else @SALESMAN end)  and   
-  --Billdate is null and due_cashid is null  
-  
+  --Billdate is null and due_cashid is null
   
 --Select LINE,salesman,sum(amount_due) as Due, isnull((select sum(Amount) from BELL_LineSalesManPayments B where A.SalesMan=B.SalesMan and a.line=b.line),0) as Paid      
 --    ,(sum(amount_due) - isnull((select sum(Amount) from BELL_LineSalesManPayments B where A.SalesMan=B.SalesMan and a.line=b.line),0) ) as Balance       
