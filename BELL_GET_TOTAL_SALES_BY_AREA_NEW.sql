@@ -19,54 +19,54 @@ select CAST(322.999932 AS DECIMAL(15,2)) AMOUNT
    GROUP BY A.AREA,CAST(BILLDATE AS DATE),A.USERNAME   ORDER BY A.AREA  
 */
 
--- BELL_GET_TOTAL_SALES_BY_AREA_NEW  'BAYYARAM','2025-01-08','BILLDATE'
--- BELL_GET_TOTAL_SALES_BY_AREA_NEW  'BAYYARAM','2025-01-08','BILLDATE'
--- BELL_GET_TOTAL_SALES_BY_AREA_NEW  'ALL','2025-01-08','ACTIONDATE'
-ALTER Procedure BELL_GET_TOTAL_SALES_BY_AREA_NEW  
-@AREA as varchar(30) = null,  
-@FROMDATE AS DATE = null,  
-@SEARCHBY AS VARCHAR(15)  
-AS               
-BEGIN    
- --SELECT FORMAT(GetDate(), 'dd/MM/yyyy', 'en-US' ) AS 'Date' ,FORMAT(123456789,'###-##-####') AS 'Custom Number';  
- --,FORMAT(ActionDate, 'dd/MM/yyyy', 'en-US') as ActionDate   
- Declare @strQuery as varchar(1500)              
- Declare @strWhereQuery as varchar(500)  
- --PRINT @FromDate  
- IF (ISNULL(@FromDate,'') <> '' )  
- BEGIN  
-  IF @SEARCHBY='BILLDATE'  
-  BEGIN  
-   --select A.AREA  ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(12,2)) AMOUNT  
-   -- ,count(distinct billnumber) as TotalBills,USERNAME, FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE FROM bhavani_ER_Bills A   
-   --WHERE A.AREA = (case lower(@AREA) when 'all' then A.AREA ELSE @AREA END)  
-   --AND CONVERT(varchar(10),BILLDATE,102) = CONVERT(varchar(10),@FROMDATE,102)  GROUP BY A.AREA,CAST(BILLDATE AS DATE),USERNAME  ORDER BY A.AREA  
-   SELECT A.AREA , CAST(ISNULL(SUM(B.PRATE * A.PACKETS)/100.0,0) AS DECIMAL(12,2)) Purchase_Amount  
-     ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(15,2)) AMOUNT ,	 
-	 (CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(15,2)) - CAST(ISNULL(SUM(B.PRATE * A.PACKETS)/100.0,0) AS DECIMAL(15,2))) Profit_Amount,	 
-	 CAST((CAST(ISNULL(SUM(AMOUNT),0) AS DECIMAL(15,2)) - CAST(ISNULL(SUM(B.PRATE * A.PACKETS),0) AS DECIMAL(15,2)))/CAST(ISNULL(SUM(B.PRATE * A.PACKETS),0) AS DECIMAL(15,2)) *100 AS DECIMAL(15,2)) AS Profit_Percent,
-     count(distinct billnumber) as TotalBills,A.USERNAME,
-	 --FORMAT(A.ActionDate, 'dd/MM/yyyy', 'en-US') as ActionDate ,    
-   FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE FROM bhavani_ER_Bills A   INNER JOIN Bell_ItemMaster B ON A.ITEMNAME=B.ITEMNAME 
-   WHERE A.AREA = (case lower(@AREA) when 'all' then A.AREA ELSE @AREA END)  
-   AND CONVERT(varchar(10),A.BILLDATE,102) = CONVERT(varchar(10),@FROMDATE,102) GROUP BY A.AREA,CAST(A.BILLDATE AS DATE),A.USERNAME   ORDER BY A.AREA  
-   --CONVERT(varchar(10),'2025-01-08',102)  
-  END  
-  ELSE  
-  BEGIN  
-   --select A.AREA ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(12,2)) AMOUNT  ,count(distinct billnumber) as TotalBills,USERNAME,  
-   --FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE FROM bhavani_ER_Bills A   
-   --WHERE A.AREA = (case lower(@AREA) when 'all' then A.AREA ELSE @AREA END)  
-   --AND CONVERT(varchar(10),ActionDate,102) = CONVERT(varchar(10),@FROMDATE,102)  GROUP BY A.AREA,CAST(BILLDATE AS DATE),USERNAME ORDER BY A.AREA  
-   SELECT A.AREA ,CAST(ISNULL(SUM(B.PRATE * A.PACKETS)/100.0,0) AS DECIMAL(12,2)) Purchase_Amount  
-     ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(15,2)) AMOUNT ,	 
-	 (CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(15,2)) - CAST(ISNULL(SUM(B.PRATE * A.PACKETS)/100.0,0) AS DECIMAL(15,2))) Profit_Amount,
-	 CAST((CAST(ISNULL(SUM(AMOUNT),0) AS DECIMAL(15,2)) - CAST(ISNULL(SUM(B.PRATE * A.PACKETS),0) AS DECIMAL(15,2)))/CAST(ISNULL(SUM(B.PRATE * A.PACKETS),0) AS DECIMAL(15,2)) *100 AS DECIMAL(15,2)) AS Profit_Percent,
-     count(distinct billnumber) as TotalBills,A.USERNAME,
-	 --FORMAT(A.ActionDate, 'dd/MM/yyyy', 'en-US') as ActionDate  ,  
-   FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE FROM bhavani_ER_Bills A   INNER JOIN Bell_ItemMaster B ON A.ITEMNAME=B.ITEMNAME 
-   WHERE A.AREA = (case lower(@AREA) when 'all' then A.AREA ELSE @AREA END)  
-   AND CONVERT(varchar(10),A.ActionDate,102) = CONVERT(varchar(10),@FROMDATE,102) GROUP BY A.AREA,CAST(A.BILLDATE AS DATE),A.USERNAME   ORDER BY A.AREA  
-  END  
- END  
-END    
+
+-- BELL_GET_TOTAL_SALES_BY_AREA_NEW  'BAYYARAM','2025-01-08','BILLDATE'  
+-- BELL_GET_TOTAL_SALES_BY_AREA_NEW  'ALL','2025-11-05','BILLDATE'  
+alter Procedure BELL_GET_TOTAL_SALES_BY_AREA_NEW    
+@AREA as varchar(30) = null,    
+@FROMDATE AS DATE = null,    
+@SEARCHBY AS VARCHAR(15)    
+AS                 
+BEGIN      
+ --SELECT FORMAT(GetDate(), 'dd/MM/yyyy', 'en-US' ) AS 'Date' ,FORMAT(123456789,'###-##-####') AS 'Custom Number';    
+ --,FORMAT(ActionDate, 'dd/MM/yyyy', 'en-US') as ActionDate     
+ Declare @strQuery as varchar(1500)                
+ Declare @strWhereQuery as varchar(500)    
+ --PRINT @FromDate    
+ IF (ISNULL(@FromDate,'') <> '' )    
+ BEGIN    
+  IF @SEARCHBY='BILLDATE'    
+  BEGIN    
+   --select A.AREA  ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(12,2)) AMOUNT    
+   -- ,count(distinct billnumber) as TotalBills,USERNAME, FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE FROM bhavani_ER_Bills A     
+   --WHERE A.AREA = (case lower(@AREA) when 'all' then A.AREA ELSE @AREA END)    
+   --AND CONVERT(varchar(10),BILLDATE,102) = CONVERT(varchar(10),@FROMDATE,102)  GROUP BY A.AREA,CAST(BILLDATE AS DATE),USERNAME  ORDER BY A.AREA    
+   SELECT A.AREA , CAST(ISNULL(SUM(B.PRATE * A.PACKETS)/100.0,0) AS DECIMAL(12,2)) Purchase_Amount    
+     ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(15,2)) AMOUNT ,    
+  (CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(15,2)) - CAST(ISNULL(SUM(B.PRATE * A.PACKETS)/100.0,0) AS DECIMAL(15,2))) Profit_Amount,    
+  CAST((CAST(ISNULL(SUM(AMOUNT),0) AS DECIMAL(15,2)) - CAST(ISNULL(SUM(B.PRATE * A.PACKETS),0) AS DECIMAL(15,2)))/CAST(ISNULL(SUM(isnull(B.PRATE,B.Rate1) * A.PACKETS),1) AS DECIMAL(15,2)) *100 AS DECIMAL(15,2)) AS Profit_Percent,  
+     count(distinct billnumber) as TotalBills,A.USERNAME,  
+  --FORMAT(A.ActionDate, 'dd/MM/yyyy', 'en-US') as ActionDate ,      
+   FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE FROM bhavani_ER_Bills A  INNER JOIN Bell_ItemMaster B ON A.ITEMNAME=B.ITEMNAME   
+   WHERE A.AREA = (case lower(@AREA) when 'all' then A.AREA ELSE @AREA END)    
+   AND CONVERT(varchar(10),A.BILLDATE,102) = CONVERT(varchar(10),@FROMDATE,102) GROUP BY A.AREA,CAST(A.BILLDATE AS DATE),A.USERNAME   ORDER BY A.AREA    
+   --CONVERT(varchar(10),'2025-01-08',102)    
+  END    
+  ELSE    
+  BEGIN    
+   --select A.AREA ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(12,2)) AMOUNT  ,count(distinct billnumber) as TotalBills,USERNAME,    
+   --FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE FROM bhavani_ER_Bills A     
+   --WHERE A.AREA = (case lower(@AREA) when 'all' then A.AREA ELSE @AREA END)    
+   --AND CONVERT(varchar(10),ActionDate,102) = CONVERT(varchar(10),@FROMDATE,102)  GROUP BY A.AREA,CAST(BILLDATE AS DATE),USERNAME ORDER BY A.AREA    
+   SELECT A.AREA ,CAST(ISNULL(SUM(B.PRATE * A.PACKETS)/100.0,0) AS DECIMAL(12,2)) Purchase_Amount    
+     ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(15,2)) AMOUNT ,    
+  (CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(15,2)) - CAST(ISNULL(SUM(B.PRATE * A.PACKETS)/100.0,0) AS DECIMAL(15,2))) Profit_Amount,  
+  CAST((CAST(ISNULL(SUM(AMOUNT),0) AS DECIMAL(15,2)) - CAST(ISNULL(SUM(B.PRATE * A.PACKETS),0) AS DECIMAL(15,2)))/CAST(ISNULL(SUM(isnull(B.PRATE,B.Rate1) * A.PACKETS),0) AS DECIMAL(15,2)) *100 AS DECIMAL(15,2)) AS Profit_Percent,  
+     count(distinct billnumber) as TotalBills,A.USERNAME,  
+  --FORMAT(A.ActionDate, 'dd/MM/yyyy', 'en-US') as ActionDate  ,    
+   FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE FROM bhavani_ER_Bills A   INNER JOIN Bell_ItemMaster B ON A.ITEMNAME=B.ITEMNAME   
+   WHERE A.AREA = (case lower(@AREA) when 'all' then A.AREA ELSE @AREA END)    
+   AND CONVERT(varchar(10),A.ActionDate,102) = CONVERT(varchar(10),@FROMDATE,102) GROUP BY A.AREA,CAST(A.BILLDATE AS DATE),A.USERNAME   ORDER BY A.AREA    
+  END    
+ END    
+END 

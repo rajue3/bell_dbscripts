@@ -1,58 +1,69 @@
-/*
-select FORMAT(BILLDATE, 'dd-MMM-yy') as BILLDATE,SHOPNAME    ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(12,2)) AMOUNT  
-  from bhavani_ER_Bills WHERE AREA='BHADRACHALAM' 
-  --and SHOPNAME = (case lower('BHARATHI RAJ (BCM)(ASHWAPUR)') when 'all' then SHOPNAME ELSE 'BHARATHI RAJ (BCM)(ASHWAPUR)' END)  
-  AND AREA_LINE = (case lower('ASHWAPUR') when 'all' then AREA_LINE ELSE 'ASHWAPUR' END)      
-  and (BILLDATE BETWEEN CONVERT(nvarchar(10),'2025-01-15',101) AND CONVERT(nvarchar(10),'2025-01-26',101))  
-  GROUP BY BILLDATE,SHOPNAME,AREA HAVING SUM(ISNULL(AMOUNT,0)) > 0 AND  SUM(ISNULL(AMOUNT,0)) >= 0  order by SHOPNAME    
+/*    
+select FORMAT(BILLDATE, 'dd-MMM-yy') as BILLDATE,SHOPNAME    ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(12,2)) AMOUNT      
+  from bhavani_ER_Bills WHERE AREA='BHADRACHALAM'     
+  --and SHOPNAME = (case lower('BHARATHI RAJ (BCM)(ASHWAPUR)') when 'all' then SHOPNAME ELSE 'BHARATHI RAJ (BCM)(ASHWAPUR)' END)      
+  AND AREA_LINE = (case lower('ASHWAPUR') when 'all' then AREA_LINE ELSE 'ASHWAPUR' END)          
+  and (BILLDATE BETWEEN CONVERT(nvarchar(10),'2025-01-15',101) AND CONVERT(nvarchar(10),'2025-01-26',101))      
+  GROUP BY BILLDATE,SHOPNAME,AREA HAVING SUM(ISNULL(AMOUNT,0)) > 0 AND  SUM(ISNULL(AMOUNT,0)) >= 0  order by SHOPNAME        
+      
+  'BHARATHI RAJ (BCM)(ASHWAPUR)'    
+    
+*/    
+-- BELL_SHOP_WISE_TOTAL_SALES 'BAYYARAM','all','all','2024-11-01','2025-11-20',1000      
+-- BELL_SHOP_WISE_TOTAL_SALES 'BHADRACHALAM ','ASHWAPUR ','all','2025-01-15','2025-01-26',10    
+-- BELL_SHOP_WISE_TOTAL_SALES 'BHADRACHALAM ','ASHWAPUR ','BHARATHI RAJ (BCM)(ASHWAPUR)','2025-01-15','2025-01-26',10      
+alter PROCEDURE BELL_SHOP_WISE_TOTAL_SALES        
+@AREA AS NVARCHAR(50),        
+@AREA_LINE AS NVARCHAR(50),      --  AREA    
+@SHOP AS NVARCHAR(50),        
+@BILLDATE1 AS DATE,        
+@BILLDATE2 AS DATE,        
+@AMOUNT AS INT        
+AS        
+BEGIN         
+  --select SHOPNAME,ISNULL(SUM(AMOUNT),0) AMOUNT from bhavani_ER_Bills        
+  --WHERE AREA=@AREA and SHOPNAME = (case lower(@SHOP) when 'all' then SHOPNAME ELSE @SHOP END)        
+  --and (BILLDATE BETWEEN CONVERT(nvarchar(10),@BILLDATE1,101) AND CONVERT(nvarchar(10),@BILLDATE2,101))        
+  --GROUP BY SHOPNAME,AREA HAVING SUM(AMOUNT) >= @AMOUNT  order by SHOPNAME        
+      
+ --DECLARE @Bell_TEMP_REPORT AS TABLE(BILLDATE VARCHAR(20), NAME VARCHAR(50),QTY INT)      
+ DECLARE @cols AS NVARCHAR(MAX), @query  AS NVARCHAR(MAX)      
+ --DECLARE @TEMP_REPORT AS TABLE (@BILLDATE VARCHAR(15),@ITEMNAME VARCHAR(50),@QTY INT)      
+      
+  CREATE TABLE dbo.#TEMP_REPORT (BILLDATE VARCHAR(20), SHOPNAME VARCHAR(100),AMOUNT DECIMAL(12,2))      
+      
+  Insert into #TEMP_REPORT      
+  select CONVERT(varchar,BILLDATE,6)   
+  --FORMAT(BILLDATE, 'dd-MMM-yy') as BILLDATE     
+  --,ISNULL(SUM(AMOUNT),0) AMOUNT      
+  ,a.SHOPNAME + ' -> ' + isnull(b.mobile,'')
+  --+ ' - ' + (select isnull(mobile,'') from Bell_Cust_Master b where b.Line=bhavani_ER_Bills.Area and b.Shopname=bhavani_ER_Bills.Shopname)
+  ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(12,2)) AMOUNT  from bhavani_ER_Bills a inner join Bell_Cust_Master b on a.Area=b.Line and a.SHOPNAME=b.ShopName
+  WHERE a.AREA=@AREA     
+  and a.SHOPNAME = (case lower(@SHOP) when 'all' then a.SHOPNAME ELSE @SHOP END)      
+  AND AREA_LINE = (case lower(@AREA_LINE) when 'all' then AREA_LINE ELSE @AREA_LINE END)          
+  and (BILLDATE BETWEEN CONVERT(nvarchar(10),@BILLDATE1,101) AND CONVERT(nvarchar(10),@BILLDATE2,101))      
+  GROUP BY a.BILLDATE,a.SHOPNAME,a.AREA,b.Mobile HAVING SUM(ISNULL(AMOUNT,0)) > 0 AND  SUM(ISNULL(AMOUNT,0)) >= @AMOUNT  order by a.SHOPNAME        
+      
+--  DELETE FROM Bell_REPORT_HEADER      
+ --INSERT INTO Bell_REPORT_HEADER SELECT DISTINCT BILLDATE FROM #TEMP_REPORT   --(STORING BILLDATE INTO SHOPNAME COL)      
+delete from Bell_REPORT_HEADER_BILLDATE          
+ set @query = N' INSERT INTO Bell_REPORT_HEADER_BILLDATE SELECT DISTINCT CONVERT(varchar,BILLDATE,6) AS BILLDATE FROM #TEMP_REPORT '             
+EXEC sp_executesql @query                
+     
+ --select @cols = STUFF((SELECT ',' + '['+ QUOTENAME(HEADER_NAME) + ']'      
+ --      from Bell_REPORT_HEADER group by HEADER_NAME FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'),1,1,'')      
+select @cols = STUFF((SELECT ',' + '['+ QUOTENAME(CONVERT(varchar,HEADER_NAME,6)) + ']'                
+     from Bell_REPORT_HEADER_BILLDATE group by HEADER_NAME order by HEADER_NAME ASC FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'),1,1,'')     
+    
+ --set @query = 'SELECT * from (select * from #TEMP_REPORT '        
+ --   +' ) x pivot (AVG(AMOUNT) for BILLDATE in (' + REPLACE(REPLACE(@cols,'[[','['),']]',']') + ') )  p'      
+ set @query = 'SELECT * from (select * from #TEMP_REPORT '              
+   +' ) x pivot (SUM(AMOUNT) for BILLDATE in (' + REPLACE(REPLACE(@cols,'[[','['),']]',']') + ') ) pv2  '    
   
-  'BHARATHI RAJ (BCM)(ASHWAPUR)'
-
-*/
--- BELL_SHOP_WISE_TOTAL_SALES 'BAYYARAM','all','all','2024-11-01','2024-11-20',1000  
--- BELL_SHOP_WISE_TOTAL_SALES 'BHADRACHALAM ','ASHWAPUR ','all','2025-01-15','2025-01-26',10
--- BELL_SHOP_WISE_TOTAL_SALES 'BHADRACHALAM ','ASHWAPUR ','BHARATHI RAJ (BCM)(ASHWAPUR)','2025-01-15','2025-01-26',10  
-alter PROCEDURE BELL_SHOP_WISE_TOTAL_SALES    
-@AREA AS NVARCHAR(50),    
-@AREA_LINE AS NVARCHAR(50),      --  AREA
-@SHOP AS NVARCHAR(50),    
-@BILLDATE1 AS DATE,    
-@BILLDATE2 AS DATE,    
-@AMOUNT AS INT    
-AS    
-BEGIN     
-  --select SHOPNAME,ISNULL(SUM(AMOUNT),0) AMOUNT from bhavani_ER_Bills    
-  --WHERE AREA=@AREA and SHOPNAME = (case lower(@SHOP) when 'all' then SHOPNAME ELSE @SHOP END)    
-  --and (BILLDATE BETWEEN CONVERT(nvarchar(10),@BILLDATE1,101) AND CONVERT(nvarchar(10),@BILLDATE2,101))    
-  --GROUP BY SHOPNAME,AREA HAVING SUM(AMOUNT) >= @AMOUNT  order by SHOPNAME    
-  
- --DECLARE @Bell_TEMP_REPORT AS TABLE(BILLDATE VARCHAR(20), NAME VARCHAR(50),QTY INT)  
- DECLARE @cols AS NVARCHAR(MAX), @query  AS NVARCHAR(MAX)  
- --DECLARE @TEMP_REPORT AS TABLE (@BILLDATE VARCHAR(15),@ITEMNAME VARCHAR(50),@QTY INT)  
-  
-  CREATE TABLE dbo.#TEMP_REPORT (BILLDATE VARCHAR(20), SHOPNAME VARCHAR(100),AMOUNT DECIMAL(12,2))  
-  
-  Insert into #TEMP_REPORT  
-  select FORMAT(BILLDATE, 'dd-MMM-yy') as BILLDATE,SHOPNAME  
-  --,ISNULL(SUM(AMOUNT),0) AMOUNT  
-  ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(12,2)) AMOUNT  
-  from bhavani_ER_Bills WHERE AREA=@AREA 
-  and SHOPNAME = (case lower(@SHOP) when 'all' then SHOPNAME ELSE @SHOP END)  
-  AND AREA_LINE = (case lower(@AREA_LINE) when 'all' then AREA_LINE ELSE @AREA_LINE END)      
-  and (BILLDATE BETWEEN CONVERT(nvarchar(10),@BILLDATE1,101) AND CONVERT(nvarchar(10),@BILLDATE2,101))  
-  GROUP BY BILLDATE,SHOPNAME,AREA HAVING SUM(ISNULL(AMOUNT,0)) > 0 AND  SUM(ISNULL(AMOUNT,0)) >= @AMOUNT  order by SHOPNAME    
-  
-  DELETE FROM Bell_REPORT_HEADER  
- INSERT INTO Bell_REPORT_HEADER SELECT DISTINCT BILLDATE FROM #TEMP_REPORT   --(STORING BILLDATE INTO SHOPNAME COL)  
-  
- select @cols = STUFF((SELECT ',' + '['+ QUOTENAME(HEADER_NAME) + ']'  
-       from Bell_REPORT_HEADER group by HEADER_NAME FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'),1,1,'')  
-  
- set @query = 'SELECT * from (select * from #TEMP_REPORT '    
-    +' ) x pivot (AVG(AMOUNT) for BILLDATE in (' + REPLACE(REPLACE(@cols,'[[','['),']]',']') + ') )  p'  
-  PRINT @query  
-  exec sp_executesql @query;  
-  
-  Select * from #TEMP_REPORT --order by shopname desc  
-
-end     
+  PRINT @query      
+  exec sp_executesql @query;      
+      
+  Select * from #TEMP_REPORT --order by shopname desc      
+    
+end 
