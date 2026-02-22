@@ -8,7 +8,7 @@
 -- USP_GET_AREALIST 'lines'    
 -- USP_GET_AREALIST 'area'    
 -- USP_GET_AREALIST 'BHADRACHALAM'    
--- USP_GET_AREALIST 'ETURNAGARAM'    
+-- USP_GET_AREALIST 'PARKAL'    
 -- USP_GET_AREALIST 'GAFERGADH'    
 CREATE procedure USP_GET_AREALIST  
 @Type as varchar(20) = null,    
@@ -20,6 +20,12 @@ Begin
  Begin    
     print 'its Item Categories'    
   Select Distinct USERNAME as LINE,'' as Area,'' as ShopName,'' as CustomerName from Bell_USERS where Status='display'    
+ end    
+ else IF (lower(@Type) = 'groupname')    --NOT USING, maintenaing with static values for now.
+ Begin    
+    print 'its Group names like Cutmet, Kiranam....'    
+  Select Distinct GROUPNAME  as LINE,'' as Area,'' as ShopName,'' as CustomerName  from Bell_Cust_Master --where Status='Active'    
+  --Select * from Bell_Cust_Master where CATEGORY LIKE 'CUTMET%'
  end    
   else IF (lower(@Type) = 'category')    
  Begin    

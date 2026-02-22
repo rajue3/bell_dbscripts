@@ -17,11 +17,18 @@ select CAST(322.999932 AS DECIMAL(15,2)) AMOUNT
    WHERE A.AREA = (case lower('all') when 'all' then A.AREA ELSE 'all' END)  
    AND CONVERT(varchar(10),A.ActionDate,102) = CAST('2025-01-08' AS DATE) --CONVERT(varchar(10),'2025-01-08',102)  
    GROUP BY A.AREA,CAST(BILLDATE AS DATE),A.USERNAME   ORDER BY A.AREA  
-*/
 
+--MODIFIED ON 21-FEB-26 FOR CUTMET,KIRANAM...
+ BELL_GET_TOTAL_SALES_BY_AREA_NEW  'JAMMIKUNTA','2026-02-09' ,'BILLDATE'
+ BELL_GET_TOTAL_SALES_BY_AREA_NEW  'MARIPEDA','2026-02-09' ,'BILLDATE'
+ BELL_GET_TOTAL_SALES_BY_AREA_NEW  'CHENNURU','2026-02-09' ,'BILLDATE'
+
+ BELL_GET_TOTAL_SALES_BY_AREA_NEW  'all','11-Feb-2026' ,'BILLDATE'
+ BELL_GET_TOTAL_SALES_BY_AREA_NEW  'all','2026-02-11' ,''
 
 -- BELL_GET_TOTAL_SALES_BY_AREA_NEW  'BAYYARAM','2025-01-08','BILLDATE'  
 -- BELL_GET_TOTAL_SALES_BY_AREA_NEW  'ALL','2025-11-05','BILLDATE'  
+*/
 alter Procedure BELL_GET_TOTAL_SALES_BY_AREA_NEW    
 @AREA as varchar(30) = null,    
 @FROMDATE AS DATE = null,    
@@ -30,43 +37,98 @@ AS
 BEGIN      
  --SELECT FORMAT(GetDate(), 'dd/MM/yyyy', 'en-US' ) AS 'Date' ,FORMAT(123456789,'###-##-####') AS 'Custom Number';    
  --,FORMAT(ActionDate, 'dd/MM/yyyy', 'en-US') as ActionDate     
- Declare @strQuery as varchar(1500)                
- Declare @strWhereQuery as varchar(500)    
- --PRINT @FromDate    
  IF (ISNULL(@FromDate,'') <> '' )    
  BEGIN    
   IF @SEARCHBY='BILLDATE'    
   BEGIN    
-   --select A.AREA  ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(12,2)) AMOUNT    
-   -- ,count(distinct billnumber) as TotalBills,USERNAME, FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE FROM bhavani_ER_Bills A     
-   --WHERE A.AREA = (case lower(@AREA) when 'all' then A.AREA ELSE @AREA END)    
-   --AND CONVERT(varchar(10),BILLDATE,102) = CONVERT(varchar(10),@FROMDATE,102)  GROUP BY A.AREA,CAST(BILLDATE AS DATE),USERNAME  ORDER BY A.AREA    
-   SELECT A.AREA , CAST(ISNULL(SUM(B.PRATE * A.PACKETS)/100.0,0) AS DECIMAL(12,2)) Purchase_Amount    
-     ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(15,2)) AMOUNT ,    
-  (CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(15,2)) - CAST(ISNULL(SUM(B.PRATE * A.PACKETS)/100.0,0) AS DECIMAL(15,2))) Profit_Amount,    
-  CAST((CAST(ISNULL(SUM(AMOUNT),0) AS DECIMAL(15,2)) - CAST(ISNULL(SUM(B.PRATE * A.PACKETS),0) AS DECIMAL(15,2)))/CAST(ISNULL(SUM(isnull(B.PRATE,B.Rate1) * A.PACKETS),1) AS DECIMAL(15,2)) *100 AS DECIMAL(15,2)) AS Profit_Percent,  
-     count(distinct billnumber) as TotalBills,A.USERNAME,  
-  --FORMAT(A.ActionDate, 'dd/MM/yyyy', 'en-US') as ActionDate ,      
-   FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE FROM bhavani_ER_Bills A  INNER JOIN Bell_ItemMaster B ON A.ITEMNAME=B.ITEMNAME   
-   WHERE A.AREA = (case lower(@AREA) when 'all' then A.AREA ELSE @AREA END)    
-   AND CONVERT(varchar(10),A.BILLDATE,102) = CONVERT(varchar(10),@FROMDATE,102) GROUP BY A.AREA,CAST(A.BILLDATE AS DATE),A.USERNAME   ORDER BY A.AREA    
-   --CONVERT(varchar(10),'2025-01-08',102)    
+  ;WITH CTE1 AS (
+        SELECT 
+            A.AREA,
+            CAST(ISNULL(SUM(B.PRATE * A.PACKETS) / 100.0, 0) AS DECIMAL(12,2)) AS Purchase_Amount,
+            CAST(ISNULL(SUM(A.AMOUNT) / 100.0, 0) AS DECIMAL(15,2)) AS Amount,
+            CAST(ISNULL(SUM(A.AMOUNT) / 100.0, 0) - ISNULL(SUM(B.PRATE * A.PACKETS) / 100.0, 0) AS DECIMAL(15,2)) AS Profit_Amount,
+            CAST(
+                (ISNULL(SUM(A.AMOUNT),0) - ISNULL(SUM(B.PRATE * A.PACKETS),0)) * 100.0 /
+                NULLIF(SUM(ISNULL(B.PRATE, B.Rate1) * A.PACKETS),0)
+                AS DECIMAL(15,2)
+            ) AS Profit_Percent,
+            'Bills=' + CAST(COUNT(DISTINCT A.billnumber) AS VARCHAR(5)) + 
+            ' Shops=' + CAST(COUNT(DISTINCT A.SHOPNAME) AS NVARCHAR(5)) AS TotalBills,
+            A.USERNAME,
+            FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') AS BILLDATE,
+            CUTMET=(SELECT COUNT(1) FROM Bell_Cust_Master WHERE STATUS='Active' and LINE=A.AREA AND  GROUPNAME='CUTMET'),
+            KIRANAM=(SELECT COUNT(1) FROM Bell_Cust_Master WHERE STATUS='Active' and  LINE=A.AREA AND GROUPNAME='KIRANAM')
+        FROM bhavani_ER_Bills A
+        INNER JOIN Bell_ItemMaster B ON A.ITEMNAME = B.ITEMNAME AND A.ITEMCODE=B.ITEMCODE
+        WHERE (@AREA IS NULL OR LOWER(@AREA) = 'all' OR A.AREA = @AREA)
+          AND CAST(A.BILLDATE AS DATE) = @FROMDATE
+        GROUP BY A.AREA, CAST(A.BILLDATE AS DATE), A.USERNAME
+    ),
+    CTE2 AS (
+        SELECT DISTINCT ER.AREA, ER.SHOPNAME, CUST.GROUPNAME
+        FROM bhavani_ER_Bills ER
+        INNER JOIN Bell_Cust_Master CUST 
+            ON ER.AREA = CUST.LINE AND ER.SHOPNAME = CUST.SHOPNAME
+        WHERE (@AREA IS NULL OR LOWER(@AREA) = 'all' OR ER.AREA = @AREA)
+          AND CAST(ER.BILLDATE AS DATE) = @FROMDATE
+          AND CUST.STATUS = 'Active'
+    )
+    SELECT 
+        CTE1.AREA,
+        CTE1.Purchase_Amount,
+        CTE1.Amount,
+        CTE1.Profit_Amount,
+        CTE1.Profit_Percent,
+        CTE1.TotalBills,
+        CTE1.USERNAME,
+        CTE1.BILLDATE,
+        CTE1.CUTMET,CTE1.KIRANAM,
+        SUM(CASE WHEN CTE2.GROUPNAME = 'CUTMET' THEN 1 ELSE 0 END) AS CUTMET_COUNT,
+        SUM(CASE WHEN CTE2.GROUPNAME <> 'CUTMET' THEN 1 ELSE 0 END) AS OTHERS_COUNT
+    FROM CTE1
+    INNER JOIN CTE2 ON CTE1.AREA = CTE2.AREA
+    GROUP BY 
+        CTE1.AREA, CTE1.Purchase_Amount, CTE1.Amount, 
+        CTE1.Profit_Amount, CTE1.Profit_Percent, 
+        CTE1.TotalBills, CTE1.USERNAME, CTE1.BILLDATE,CTE1.CUTMET,CTE1.KIRANAM
+    ORDER BY CTE1.AREA;
   END    
   ELSE    
   BEGIN    
-   --select A.AREA ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(12,2)) AMOUNT  ,count(distinct billnumber) as TotalBills,USERNAME,    
-   --FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE FROM bhavani_ER_Bills A     
-   --WHERE A.AREA = (case lower(@AREA) when 'all' then A.AREA ELSE @AREA END)    
-   --AND CONVERT(varchar(10),ActionDate,102) = CONVERT(varchar(10),@FROMDATE,102)  GROUP BY A.AREA,CAST(BILLDATE AS DATE),USERNAME ORDER BY A.AREA    
+   WITH CTE1 AS (
    SELECT A.AREA ,CAST(ISNULL(SUM(B.PRATE * A.PACKETS)/100.0,0) AS DECIMAL(12,2)) Purchase_Amount    
      ,CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(15,2)) AMOUNT ,    
   (CAST(ISNULL(SUM(AMOUNT)/100.0,0) AS DECIMAL(15,2)) - CAST(ISNULL(SUM(B.PRATE * A.PACKETS)/100.0,0) AS DECIMAL(15,2))) Profit_Amount,  
   CAST((CAST(ISNULL(SUM(AMOUNT),0) AS DECIMAL(15,2)) - CAST(ISNULL(SUM(B.PRATE * A.PACKETS),0) AS DECIMAL(15,2)))/CAST(ISNULL(SUM(isnull(B.PRATE,B.Rate1) * A.PACKETS),0) AS DECIMAL(15,2)) *100 AS DECIMAL(15,2)) AS Profit_Percent,  
-     count(distinct billnumber) as TotalBills,A.USERNAME,  
+     --count(distinct billnumber) as TotalBills,
+      'Bills=' + cast(count(distinct A.billnumber) as varchar(5)) + '  Shops=' + cast(count(distinct A.SHOPNAME) as nvarchar(5)) as TotalBills,A.USERNAME,  
   --FORMAT(A.ActionDate, 'dd/MM/yyyy', 'en-US') as ActionDate  ,    
-   FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE FROM bhavani_ER_Bills A   INNER JOIN Bell_ItemMaster B ON A.ITEMNAME=B.ITEMNAME   
+   FORMAT(A.BILLDATE, 'dd-MMM-yyyy', 'en-US') as BILLDATE ,
+   CUTMET=(SELECT COUNT(1) FROM Bell_Cust_Master WHERE STATUS='Active' and LINE=A.AREA AND  GROUPNAME='CUTMET'),
+   KIRANAM=(SELECT COUNT(1) FROM Bell_Cust_Master WHERE STATUS='Active' and  LINE=A.AREA AND GROUPNAME='KIRANAM')
+   --OTHERS=(SELECT COUNT(1) FROM Bell_Cust_Master WHERE STATUS='Active' and  LINE=A.AREA AND 
+   --(GROUPNAME NOT IN ('CUTMET','KIRANAM') OR GROUPNAME is null))
+   FROM bhavani_ER_Bills A   INNER JOIN Bell_ItemMaster B ON A.ITEMNAME=B.ITEMNAME AND A.ITEMCODE=B.ITEMCODE
+   --INNER JOIN Bell_Cust_Master C ON A.AREA=C.LINE
    WHERE A.AREA = (case lower(@AREA) when 'all' then A.AREA ELSE @AREA END)    
-   AND CONVERT(varchar(10),A.ActionDate,102) = CONVERT(varchar(10),@FROMDATE,102) GROUP BY A.AREA,CAST(A.BILLDATE AS DATE),A.USERNAME   ORDER BY A.AREA    
+   AND CONVERT(varchar(10),A.ActionDate,102) = CONVERT(varchar(10),@FROMDATE,102) 
+   GROUP BY A.AREA,CAST(A.BILLDATE AS DATE),A.USERNAME   --ORDER BY A.AREA  
+   )
+    , CTE2 AS (
+    SELECT DISTINCT ER.AREA,ER.SHOPNAME, CUST.GROUPNAME FROM bhavani_ER_Bills ER INNER JOIN Bell_Cust_Master CUST ON 
+    ER.AREA =CUST.LINE AND ER.SHOPNAME=CUST.SHOPNAME 
+    WHERE ER.AREA= (case lower(@AREA) when 'all' then ER.AREA ELSE @AREA END)    
+    AND CONVERT(varchar(10),ER.ActionDate,102) = CONVERT(varchar(10),@FROMDATE,102)  AND CUST.STATUS='Active' 
+    )    
+    SELECT CTE1.AREA,CTE1.Purchase_Amount,CTE1.AMOUNT,CTE1.PROFIT_AMOUNT,CTE1.PROFIT_PERCENT,CTE1.TOTALBILLS,
+    CTE1.USERNAME,CTE1.BILLDATE,CTE1.CUTMET,CTE1.KIRANAM
+    ,SUM(CASE WHEN GROUPNAME = 'CUTMET' THEN 1 ELSE 0 END) AS CUTMET_COUNT,
+    SUM(CASE WHEN GROUPNAME <> 'CUTMET' THEN 1 ELSE 0 END) AS OTHERS_COUNT FROM CTE1 INNER JOIN CTE2 ON CTE1.AREA=CTE2.AREA
+    GROUP BY CTE1.AREA,CTE1.Purchase_Amount,CTE1.AMOUNT,CTE1.PROFIT_AMOUNT,CTE1.PROFIT_PERCENT,CTE1.TOTALBILLS,
+    CTE1.USERNAME,CTE1.BILLDATE,CTE1.CUTMET,CTE1.KIRANAM
+    ORDER BY CTE1.AREA ; 
+    --  BELL_GET_TOTAL_SALES_BY_AREA_NEW  'all','2026-02-11' ,''
+
   END    
  END    
 END 
