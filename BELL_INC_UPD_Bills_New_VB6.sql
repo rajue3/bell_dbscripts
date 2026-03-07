@@ -7,7 +7,7 @@ select * from bhavani_ER_Bills  order by actiondate desc
 -- select * from bhavani_ER_Bills  where billdate = '2025-Jan-07' AND AREA='BAZAR' AND BILLNUMBER=1  
 --update bhavani_ER_Bills  set PRATE=RATE-RATE*0.05 WHERE PRATE ISNULL  
   
-ALTER  procedure BELL_INC_UPD_Bills_NEW      
+ALTER  procedure BELL_INC_UPD_Bills_NEW
 @AREA as varchar(30),            
 @SHOP AS VARCHAR(50),            
 @BILLDATE as DATE,            

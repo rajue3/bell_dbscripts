@@ -1,0 +1,90 @@
+/*  TO GET LAST 4 ORDERS LIKE TOTAL PACKETS LOADED AND UNLOADED PACKETS
+--SELECT   LEFT(PACKINGTYPE, 1) + ' (' + CAST(TOTALITEMSINPACK AS VARCHAR(10)) + ')' AS ItemType FROM Bell_ItemMaster;
+SELECT * FROM BELL_LS_ORDERS WHERE Area = 'ADILABAD'
+SELECT * FROM bell_ItemMaster
+
+SELECT BillDate, ROW_NUMBER() OVER (ORDER BY BillDate DESC) AS rn
+			FROM (SELECT DISTINCT BillDate FROM Bhavani_ER_Bills WHERE Area='ETURNAGARAM' AND BILLDATE<'2026-Jan-02') D
+
+-- BELL_GET_PREVIOUS4_ORDERS 'ABCD-AREA','2025-Dec-19'
+-- BELL_GET_PREVIOUS4_ORDERS 'NEKKONDA','2025-Dec-16'
+-- BELL_GET_PREVIOUS4_ORDERS 'ADILABAD','2025-Dec-16'
+
+-- BELL_GET_PREVIOUS4_ORDERS_NEW 'ADILABAD','2025-Dec-16'
+-- BELL_GET_PREVIOUS4_ORDERS_NEW 'NEKKONDA','2025-Dec-20','BILLS'
+-- BELL_GET_PREVIOUS4_ORDERS_NEW 'JAMMIKUNTA','2025-Dec-20','BILLS'
+*/
+ALTER procedure Bell_Get_Previous4_Orders_New
+@AREA as varchar(50),
+@BILLDATE AS DATE,
+@REPORTTYPE VARCHAR(20) = ''
+AS
+BEGIN
+
+-- THIS IS TO SHOW LAST WEEKS TRANSACTIONS MADE BY INDIVIDUAL SHOPS.  FIRST WILL GET BY LINE AND THEN FILTER BY SHOP IN MOBILE APP.
+IF @REPORTTYPE='BILLS'
+BEGIN
+		WITH LastDates AS (
+			SELECT BillDate,
+				   ROW_NUMBER() OVER (ORDER BY BillDate DESC) AS rn
+			FROM (SELECT DISTINCT BillDate FROM Bhavani_ER_Bills WHERE Area=@AREA AND BILLDATE<@BILLDATE ) d
+		)
+		, Filtered AS (
+			SELECT ItemCode,ItemName, RATE,BillDate, PACKETS,SALESMAN,AREA,AREA_LINE,SHOPNAME	FROM Bhavani_ER_Bills 	WHERE Area=@AREA
+			  AND BillDate IN (SELECT BillDate FROM LastDates WHERE rn <= 4)
+		)  		
+		SELECT ItemCode,ItemName, MAX(RATE) RATE, AREA,SHOPNAME,AREA_LINE,
+			ISNULL(MAX(CASE WHEN ld.rn = 4 THEN f.PACKETS END),0) AS PACKETS_Date4,
+			ISNULL(MAX(CASE WHEN ld.rn = 3 THEN f.PACKETS END),0) AS PACKETS_Date3,
+			ISNULL(MAX(CASE WHEN ld.rn = 2 THEN f.PACKETS END),0) AS PACKETS_Date2,
+			ISNULL(MAX(CASE WHEN ld.rn = 1 THEN f.PACKETS END),0) AS PACKETS_Date1    
+			FROM Filtered f LEFT JOIN LastDates ld ON f.BillDate = ld.BillDate						
+			GROUP BY SHOPNAME,ItemCode,ItemName,AREA,AREA_LINE
+			ORDER BY SHOPNAME,ItemCode,AREA_LINE;
+END
+ELSE
+BEGIN
+		WITH LastDates AS (
+			SELECT BillDate,
+				   ROW_NUMBER() OVER (ORDER BY BillDate DESC) AS rn
+			FROM (SELECT DISTINCT BillDate FROM Bell_LS WHERE Area=@AREA AND BILLDATE<@BILLDATE and USERNAME<>'ORDERS') d
+		)
+		, Filtered AS (
+			SELECT ItemCode,ItemName, BillDate, T_B, R_B
+			FROM Bell_LS
+			WHERE Area = @AREA
+			  AND BillDate IN (SELECT BillDate FROM LastDates WHERE rn <= 4)
+		)  
+		--select * from Filtered order by Itemname
+		SELECT 
+			im.ItemCode,im.ItemName,max(im.Rate1) as Rate,LEFT(PACKINGTYPE, 1) + ' (' + CAST(TOTALITEMSINPACK AS VARCHAR(10)) + ')' AS PackType,
+			ISNULL(MAX(TOTALITEMSINPACK),1) as TOTALITEMSINPACK,
+			--isnull(MAX(LS.QTY),'') AS QTY, isnull(MAX(LS.T_B),'') AS T_B,isnull(max(LS.ID),'') AS ID,	
+
+			--ISNULL(MAX(CASE WHEN ld.rn = 4 THEN f.T_B END),0) AS T_B_Date4,
+			--ISNULL(MAX(CASE WHEN ld.rn = 4 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS R_B_Date4,
+			--ISNULL(MAX(CASE WHEN ld.rn = 3 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS T_B_Date3,
+			--ISNULL(MAX(CASE WHEN ld.rn = 3 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS R_B_Date3,
+			--ISNULL(MAX(CASE WHEN ld.rn = 2 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS T_B_Date2,
+			--ISNULL(MAX(CASE WHEN ld.rn = 2 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS R_B_Date2,
+			--ISNULL(MAX(CASE WHEN ld.rn = 1 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS T_B_Date1,
+			--ISNULL(MAX(CASE WHEN ld.rn = 1 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS R_B_Date1
+
+			ISNULL(MAX(CASE WHEN ld.rn = 4 THEN f.T_B END),0) AS T_B_Date4,
+			ISNULL(MAX(CASE WHEN ld.rn = 4 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS R_B_Date4,
+			ISNULL(MAX(CASE WHEN ld.rn = 3 THEN f.T_B END),0) AS T_B_Date3,
+			ISNULL(MAX(CASE WHEN ld.rn = 3 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS R_B_Date3,
+			ISNULL(MAX(CASE WHEN ld.rn = 2 THEN f.T_B END),0) AS T_B_Date2,
+			ISNULL(MAX(CASE WHEN ld.rn = 2 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS R_B_Date2,
+			ISNULL(MAX(CASE WHEN ld.rn = 1 THEN f.T_B END),0) AS T_B_Date1,
+			ISNULL(MAX(CASE WHEN ld.rn = 1 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS R_B_Date1
+			FROM Bell_ItemMaster im
+			LEFT JOIN Filtered f ON im.ItemName = f.ItemName
+			LEFT JOIN LastDates ld ON f.BillDate = ld.BillDate
+			--LEFT JOIN (SELECT ITEMNAME, QTY, ID, T_B FROM BELL_LS_ORDERS WHERE Area=@AREA AND BILLDATE=@BILLDATE) AS LS  ON im.ITEMNAME=LS.ITEMNAME 
+			Where im.STATUS='Active' and im.CATEGORY<>'RAW MATERIALS'
+			GROUP BY im.ItemName,im.ItemCode,PACKINGTYPE,TOTALITEMSINPACK
+			ORDER BY im.ItemCode;
+	END
+
+END
