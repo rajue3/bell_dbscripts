@@ -10,7 +10,7 @@
 -- USP_GET_AREALIST 'BHADRACHALAM'    
 -- USP_GET_AREALIST 'PARKAL'    
 -- USP_GET_AREALIST 'GAFERGADH'    
-CREATE procedure USP_GET_AREALIST  
+ALTER procedure USP_GET_AREALIST  
 @Type as varchar(20) = null,    
 @FROMDATE AS DATE = null,        
 @TODATE AS DATE = null        
@@ -19,40 +19,40 @@ Begin
   IF (lower(@Type) = 'users')    
  Begin    
     print 'its Item Categories'    
-  Select Distinct USERNAME as LINE,'' as Area,'' as ShopName,'' as CustomerName from Bell_USERS where Status='display'    
+  Select Distinct USERNAME as LINE,'' as Area,'' as ShopName,'' as CustomerName from Bell_USERS WITH (NOLOCK) where Status='display'    
  end    
  else IF (lower(@Type) = 'groupname')    --NOT USING, maintenaing with static values for now.
  Begin    
     print 'its Group names like Cutmet, Kiranam....'    
-  Select Distinct GROUPNAME  as LINE,'' as Area,'' as ShopName,'' as CustomerName  from Bell_Cust_Master --where Status='Active'    
+  Select Distinct GROUPNAME  as LINE,'' as Area,'' as ShopName,'' as CustomerName  from Bell_Cust_Master WITH (NOLOCK) --where Status='Active'    
   --Select * from Bell_Cust_Master where CATEGORY LIKE 'CUTMET%'
  end    
   else IF (lower(@Type) = 'category')    
  Begin    
     print 'its Item Categories'    
-  Select Distinct CATEGORY as LINE,'' as Area,'' as ShopName,'' as CustomerName  from Bell_ItemMaster --where Status='Active'    
+  Select Distinct CATEGORY as LINE,'' as Area,'' as ShopName,'' as CustomerName  from Bell_ItemMaster WITH (NOLOCK) --where Status='Active'    
  end    
  else IF (lower(@Type) = 'lines')    
  Begin    
     print 'its line'    
-  Select Distinct Line,'' as Area,'' as ShopName,'' as CustomerName  from Bell_Cust_Master where Status='Active' and isnull(Line,'') <> '' order by Line    
+  Select Distinct Line,'' as Area,'' as ShopName,'' as CustomerName  from Bell_Cust_Master WITH (NOLOCK) where Status='Active' and isnull(Line,'') <> '' order by Line    
  end    
  else    
  IF (@Type = 'area')    
  Begin    
     print 'its area'    
- select Distinct Area,Line,'' as ShopName,'' as CustomerName  from Bell_Cust_Master where Status='Active' and isnull(Area,'')<>'' order by Area    
+ select Distinct Area,Line,'' as ShopName,'' as CustomerName  from Bell_Cust_Master WITH (NOLOCK) where Status='Active' and isnull(Area,'')<>'' order by Area    
  end    
 else    
  begin    
       print 'its shops'    
-   if (select count(1) from Bell_Cust_Master where Status='Active' and Line=@Type) > 0  
+   if (select count(1) from Bell_Cust_Master WITH (NOLOCK) where Status='Active' and Line=@Type) > 0  
    begin  
-   Select Distinct ShopName,CustomerName,'' as Area,'' as Line from Bell_Cust_Master where Status='Active' and Line=@Type  order by ShopName    
+   Select Distinct ShopName,CustomerName,'' as Area,'' as Line from Bell_Cust_Master WITH (NOLOCK) where Status='Active' and Line=@Type  order by ShopName    
   end  
   else  
   begin  
-   Select Distinct ShopName,CustomerName,'' as Area,'' as Line from Bell_Cust_Master where Status='Active' and Area=@Type  order by ShopName    
+   Select Distinct ShopName,CustomerName,'' as Area,'' as Line from Bell_Cust_Master WITH (NOLOCK) where Status='Active' and Area=@Type  order by ShopName    
   end  
     --select distinct ShopName, '' as Area,'' as CustomerName,'' as Line FROM bhavani_ER_Bills A        
     --WHERE Area=@Type AND (CONVERT(varchar(10),BILLDATE,102) Between CONVERT(varchar(10),@FROMDATE,102) and CONVERT(varchar(10),@TODATE,102))        

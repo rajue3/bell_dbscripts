@@ -1,5 +1,14 @@
 -- Bell_APP_GET_ALL_ITEMS 'FORMOBILE_ALL'  
-select * from bhavani_ER_Bills where username like 'From_Mobile'
+SELECT * FROM bhavani_ER_Bills WHERE BILLDATE>= '14/Mar/2026' and billdate<='14/Mar/2026' 
+ORDER BY BILLNUMBER,ITEMNAME 
+SELECT CONVERT(varchar,BILLDATE,106), * FROM bhavani_ER_Bills WHERE BILLDATE>= '2026-03-14' 
+SELECT * FROM bhavani_ER_Bills WHERE CAST(BillDate AS DATE)= '14 Mar 2026'
+SELECT * FROM bhavani_ER_Bills WHERE AREA ='BAZAR' AND CAST(BillDate AS DATE)= '14/Mar/2026' ORDER BY BILLNUMBER,ITEMNAME 
+
+SELECT * FROM Bell_LS WHERE CAST(BillDate AS DATE)= '14 Mar 2026' 
+SELECT * FROM Bell_LS WHERE AREA ='BAZAR' AND CAST(BillDate AS DATE)= '14/Mar/2026' ORDER BY BILLDATE,ITEMNAME 
+
+select * from bhavani_ER_Bills where username like 'From_Mobile' order by actiondate desc
 --DELETE FROM bhavani_ER_Bills where username like 'From_Mobile'
 select * FROM BELL_ItemMaster Where status='Active' and CATEGORY<>'RAW MATERIALS'   order by itemname
 select * from BELL_ITEMMASTER where OFFERAVAILABLE='Y' and isnull(offeritemname,'') <> ''
@@ -22,13 +31,22 @@ WHERE OFFERAVAILABLE='Y' and isnull(offeritemname,'') <> ''
 --add new col 'MinOrderForOffer' , OfferPacks
 --alter table BELL_ITEMMASTER add  OFFER_QTY_AVAIL int DEFAULT 0
 --UPDATE BELL_ITEMMASTER SET OFFER_QTY_AVAIL = 1 where OFFERAVAILABLE='Y' and isnull(offeritemname,'') <> ''
-select * from BELL_ITEMMASTER where status='Active' and isnull(offeritemname,'') <> ''
-select * from bhavani_ER_Bills where username like '%From_Mobile%'
-UPDATE bhavani_ER_Bills SET BILLDATE='3/4/2026 11:39:49 PM' WHERE BILLID=876984
--- created for Mobile app, but this has to merge with actual SP being used in VB6. 28-Feb-26  
-BELL_INC_UPD_Bills_NEW_MOBILE 'Asifabad','KERAMERI','H.K.G.N (A.BAD)K.MRI)','3/4/2026 11:39:49 AM',1,'khara 5 RS',42,'40',40,1,200,'From_Mobile',0,0,'',0,0,'king','Cash'
+--select * from BELL_ITEMMASTER where status='Active' and isnull(offeritemname,'') <> ''
+select * from bhavani_ER_Bills where username like '%From_Mobile%' order by actiondate desc
+select * from bhavani_ER_Bills where username like '%From_Mobile%' and billnumber=1 order by itemname
+--delete from  bhavani_ER_Bills where username like '%From_Mobile%'
 
-ALTER procedure BELL_INC_UPD_Bills_NEW_MOBILE
+--UPDATE bhavani_ER_Bills SET BILLDATE='3/4/2026 11:39:49 PM' WHERE BILLID=876984
+-- created for Mobile app, but this has to merge with actual SP being used in VB6. 28-Feb-26  
+BELL_INC_UPD_Bills_NEW_MOBILE 'Asifabad','KERAMERI','H.K.G.N (A.BAD)K.MRI)','3/16/2026 11:39:49 AM',1,'khara 5 RS',42,'40',40,1,200,'From_Mobile',0,0,'',0,0,'king','Cash'
+
+BELL_INC_UPD_Bills_NEW_MOBILE 'NARSAMPET','KERAMERI','HIMA BINDHU K/M (NRSP)(MLPY)','3/16/2026 11:39:49 AM',300,'CAKE 1RS',14.5,'120',120,2,1740.0,'From_Mobile',0,0,'',0,0,'king','Cash'
+
+SELECT * FROM Bell_ItemMaster WITH (NOLOCK) WHERE  ITEMCODE<10
+
+
+BELL_INC_UPD_Bills_NEW_MOBILE_working
+alter procedure BELL_INC_UPD_Bills_NEW_MOBILE_working
 @AREA as varchar(50),
 @AREA_LINE as varchar(50),
 @SHOP AS VARCHAR(50),            
@@ -36,7 +54,7 @@ ALTER procedure BELL_INC_UPD_Bills_NEW_MOBILE
 @ITEMCODE AS integer,            
 @ITEMNAME AS VARCHAR(50),            
 @PRICE AS VARCHAR(5),            
-@QTY AS VARCHAR(10),            
+@QTY AS VARCHAR(20),       --@PACKING_QTY
 @PACKETS AS integer,            
 @BILLNUMBER AS INTeger,            
 @AMOUNT AS integer,            
@@ -47,10 +65,11 @@ ALTER procedure BELL_INC_UPD_Bills_NEW_MOBILE
 @OFFER_RATE AS money=0.00,            
 @OFFER_QTY AS INTEGER=0,
 @SALESMAN AS nvarchar(30)='',
-@PAYMENT_MODE AS nvarchar(30)=''
+@PAYMENT_MODE AS nvarchar(30)='',
+@MOBILEORDERDATE as DATETIME
 AS                         
 BEGIN            
-    print 'billdate=' + cast(@billdate as varchar)
+   -- print 'billdate=' + cast(@billdate as varchar)
  --IF NOT EXISTS(SELECT SHOPNAME FROM Bell_Cust_Master WHERE AREA=@AREA AND SHOPNAME=@SHOP)            
  --BEGIN            
  -- INSERT INTO Bell_Cust_Master (CUSTID,AREA,SHOPNAME,[STATUS]) VALUES(0,@AREA,@SHOP,'Active')            
@@ -59,18 +78,26 @@ BEGIN
   
   --set @BILLDATE = CONVERT(varchar(10),@BILLDATE,101)            
   DECLARE @PRATE AS MONEY   --,@AREA_LINE AS VARCHAR(50)          
-          
-  SELECT @PRATE=ISNULL(PRATE,RATE1) FROM Bell_ItemMaster WHERE   ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME          
+  IF @OFFER_QTY = 0 
+  BEGIN
+            SET @OFFER_ITEM = ''
+            SET @OFFER_RATE = 0
+  END
+  SELECT @PRATE=ISNULL(PRATE,RATE1) FROM Bell_ItemMaster WITH (NOLOCK) WHERE  ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME          
   --SELECT @AREA_LINE= AREA FROM Bell_Cust_Master WHERE LINE=@AREA AND SHOPNAME=@SHOP AND STATUS='ACTIVE'          
         
-  iF (SELECT COUNT(1) FROM bhavani_ER_Bills WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME AND AREA=@AREA AND SHOPNAME=@SHOP            
-     AND BILLNUMBER=@BILLNUMBER AND CONVERT(varchar(10),BILLDATE,101) = @BILLDATE) = 0             
+  iF (SELECT COUNT(1) FROM bhavani_ER_Bills WITH (NOLOCK) WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME AND AREA=@AREA AND SHOPNAME=@SHOP            
+    AND BILLNUMBER=@BILLNUMBER AND cast(BILLDATE as Date) = cast(@BILLDATE as Date)) = 0             
+     --AND BILLNUMBER=@BILLNUMBER AND CONVERT(varchar(10),BILLDATE,101) = @BILLDATE) = 0             
  BEGIN            
-  insert into bhavani_ER_Bills (ITEMCODE,ITEMNAME,RATE,PACKETS,QTY,AMOUNT,BILLNUMBER,BILLDATE,AREA,SHOPNAME,USERNAME,PRATE,AREA_LINE,DAMAGES,
-  DISCOUNT,OFFER_ITEM,OFFER_RATE,OFFER_QTY,SALESMAN,PAYMENT_MODE) 
-  values(@ITEMCODE,@ITEMNAME,@PRICE,@PACKETS,@QTY,@AMOUNT,@BILLNUMBER,@BILLDATE,@AREA,@SHOP,@USERNAME,@PRATE,ISNULL(@AREA_LINE,@AREA),@DAMAGES,@DISCOUNTED,@OFFER_ITEM,@OFFER_RATE,@OFFER_QTY,@SALESMAN,@PAYMENT_MODE)
+  insert into bhavani_ER_Bills(ITEMCODE,ITEMNAME,RATE,PACKETS,QTY,AMOUNT,BILLNUMBER,BILLDATE,AREA,SHOPNAME,USERNAME,PRATE,AREA_LINE,DAMAGES,
+  DISCOUNT,OFFER_ITEM,OFFER_RATE,OFFER_QTY,SALESMAN,PAYMENT_MODE,MobileOrderDate) 
+  values(@ITEMCODE,@ITEMNAME,@PRICE,@PACKETS,@QTY,@AMOUNT,@BILLNUMBER,
+  cast(@BILLDATE as Date),@AREA,@SHOP,@USERNAME,@PRATE,
+  ISNULL(@AREA_LINE,@AREA),@DAMAGES,@DISCOUNTED,@OFFER_ITEM,@OFFER_RATE,@OFFER_QTY,@SALESMAN,
+  @PAYMENT_MODE,@BILLDATE)
           
-	  if (select count(1) from Bell_Cust_Master  where line = @area  and IsForDirectSales='Y')  > 0         
+	  if (select count(1) from Bell_Cust_Master WITH (NOLOCK)  where line = @area  and IsForDirectSales='Y')  > 0         
 	  begin        
 	   UPDATE BELL_ITEMMASTER SET STOCK=STOCK-@PACKETS,USERNAME=@USERNAME,
        ACTIONDATE=GETDATE() WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME              
@@ -81,15 +108,15 @@ BEGIN
         UPDATE bhavani_ER_Bills SET RATE=@PRICE,PACKETS=@PACKETS,QTY=@QTY,AMOUNT=@AMOUNT,USERNAME=@USERNAME          
       ,AREA_LINE=ISNULL(@AREA_LINE,@AREA),DAMAGES=@DAMAGES,DISCOUNT=@DISCOUNTED,
       OFFER_ITEM=@OFFER_ITEM,OFFER_RATE=@OFFER_RATE,OFFER_QTY=@OFFER_QTY,SALESMAN=@SALESMAN,
-      BILLDATE=@BILLDATE,PAYMENT_MODE=@PAYMENT_MODE,ACTIONDATE=GETDATE()
+      BILLDATE=cast(@BILLDATE as Date),MobileOrderDate=@BILLDATE,PAYMENT_MODE=@PAYMENT_MODE,ACTIONDATE=GETDATE()
       WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME AND AREA=@AREA AND SHOPNAME=@SHOP AND          
         BILLNUMBER=@BILLNUMBER AND CONVERT(varchar(10),BILLDATE,101) = @BILLDATE            
           
   DECLARE @PREVIOUS_PACKETS AS INTEGER        
-  SELECT @PREVIOUS_PACKETS=packets FROM bhavani_ER_Bills WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME AND AREA=@AREA         
+  SELECT @PREVIOUS_PACKETS=packets FROM bhavani_ER_Bills WITH (NOLOCK)  WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME AND AREA=@AREA         
   AND SHOPNAME=@SHOP  AND BILLNUMBER=@BILLNUMBER AND CONVERT(varchar(10),BILLDATE,101) = @BILLDATE                
         
-  if (select count(1) from Bell_Cust_Master  where line = @area  and IsForDirectSales='Y')  > 0         
+  if (select count(1) from Bell_Cust_Master WITH (NOLOCK)  where line = @area  and IsForDirectSales='Y')  > 0         
   begin        
     UPDATE BELL_ITEMMASTER SET STOCK=STOCK+@PREVIOUS_PACKETS-@PACKETS,USERNAME=@USERNAME,ACTIONDATE=GETDATE() WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME              
   end        

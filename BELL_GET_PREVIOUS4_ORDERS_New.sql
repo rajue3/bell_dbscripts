@@ -27,10 +27,10 @@ BEGIN
 		WITH LastDates AS (
 			SELECT BillDate,
 				   ROW_NUMBER() OVER (ORDER BY BillDate DESC) AS rn
-			FROM (SELECT DISTINCT BillDate FROM Bhavani_ER_Bills WHERE Area=@AREA AND BILLDATE<@BILLDATE ) d
+			FROM (SELECT DISTINCT BillDate FROM Bhavani_ER_Bills WITH (NOLOCK) WHERE Area=@AREA AND BILLDATE<@BILLDATE ) d
 		)
 		, Filtered AS (
-			SELECT ItemCode,ItemName, RATE,BillDate, PACKETS,SALESMAN,AREA,AREA_LINE,SHOPNAME	FROM Bhavani_ER_Bills 	WHERE Area=@AREA
+			SELECT ItemCode,ItemName, RATE,BillDate, PACKETS,SALESMAN,AREA,AREA_LINE,SHOPNAME	FROM Bhavani_ER_Bills WITH (NOLOCK)	WHERE Area=@AREA
 			  AND BillDate IN (SELECT BillDate FROM LastDates WHERE rn <= 4)
 		)  		
 		SELECT ItemCode,ItemName, MAX(RATE) RATE, AREA,SHOPNAME,AREA_LINE,
@@ -47,11 +47,11 @@ BEGIN
 		WITH LastDates AS (
 			SELECT BillDate,
 				   ROW_NUMBER() OVER (ORDER BY BillDate DESC) AS rn
-			FROM (SELECT DISTINCT BillDate FROM Bell_LS WHERE Area=@AREA AND BILLDATE<@BILLDATE and USERNAME<>'ORDERS') d
+			FROM (SELECT DISTINCT BillDate FROM Bell_LS WITH (NOLOCK) WHERE Area=@AREA AND BILLDATE<@BILLDATE and USERNAME<>'ORDERS') d
 		)
 		, Filtered AS (
 			SELECT ItemCode,ItemName, BillDate, T_B, R_B
-			FROM Bell_LS
+			FROM Bell_LS WITH (NOLOCK)
 			WHERE Area = @AREA
 			  AND BillDate IN (SELECT BillDate FROM LastDates WHERE rn <= 4)
 		)  
@@ -78,7 +78,7 @@ BEGIN
 			ISNULL(MAX(CASE WHEN ld.rn = 2 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS R_B_Date2,
 			ISNULL(MAX(CASE WHEN ld.rn = 1 THEN f.T_B END),0) AS T_B_Date1,
 			ISNULL(MAX(CASE WHEN ld.rn = 1 THEN (f.T_B-isnull(f.R_B,0)) END),0) AS R_B_Date1
-			FROM Bell_ItemMaster im
+			FROM Bell_ItemMaster im WITH (NOLOCK)
 			LEFT JOIN Filtered f ON im.ItemName = f.ItemName
 			LEFT JOIN LastDates ld ON f.BillDate = ld.BillDate
 			--LEFT JOIN (SELECT ITEMNAME, QTY, ID, T_B FROM BELL_LS_ORDERS WHERE Area=@AREA AND BILLDATE=@BILLDATE) AS LS  ON im.ITEMNAME=LS.ITEMNAME 
