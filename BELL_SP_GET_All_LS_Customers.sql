@@ -39,7 +39,7 @@ END
 --SET @strQuery = 'select sum(Amount) as TotalAmount,count(1) as TotalItems,Area,ShopName,CustomerName,SalesMan FROM bhavani_ER_Bills '  
 --without group   
 --SET @strQuery = 'select ID,Area,ShopName,CustomerName,Mobile,SalesMan FROM bhavani_ER_Bills '  
-SET @strQuery = 'select row_number() over(order by ID) as SNO,LINE,Area,ShopName,CustomerName,Mobile,SalesMan,Isnull(LandMark,'''') as LandMark,Isnull(Lng,'''') Longitude,isnull(Lat,'''') as Latitude,isnull(CATEGORY,'''') CATEGORY , isnull(GROUPNAME,'''') GROUPNAME from Bell_Cust_Master M '  
+SET @strQuery = 'select row_number() over(order by ID) as SNO,LINE,Area,ShopName,CustomerName,Mobile,SalesMan,Isnull(LandMark,'''') as LandMark,Isnull(Lng,'''') Longitude,isnull(Lat,'''') as Latitude,isnull(CATEGORY,'''') CATEGORY , isnull(GROUPNAME,'''') GROUPNAME,ISNULL(AREA_SEQ,0) AS AREA_SEQ,ISNULL(SHOP_SEQ,0) AS SHOP_SEQ from Bell_Cust_Master M '  
 
 --SET @strQuery = 'select row_number() over(order by ID) as SNO,LINE,Area,ShopName,CustomerName,Mobile,SalesMan,Isnull(LandMark,'''') as LandMark,Isnull--(Lng,'''') Longitude,isnull(Lat,'''') as Latitude,isnull(CATEGORY,'''') CATEGORY , isnull(GROUPNAME,'''') GROUPNAME from Bell_Cust_Master M '  
 

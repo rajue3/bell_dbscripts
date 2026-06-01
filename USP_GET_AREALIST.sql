@@ -1,22 +1,44 @@
-    
+/*    
 --Update Bell_Cust_Master set CUSTOMERNAME='Bhavani_Test',SHOPNAME='Bell Brand',MOBILE='7981146053' Where ID=6      
 --  select * from Bell_Cust_Master where Line='Ghanpur' and status='Active' order by Area asc  
+select * from Bell_Cust_Master where LINE in ('BAZAR','BHAVANI','GATE','NEZAR')
+select * from Bell_Cust_Master where isfordirectsales='yes' AND Status='Active'
+--UPDATE Bell_Cust_Master SET ISFORDIRECTSALES='NO' where line in ('MEDAK','PALVANCHA','NEKKONDA')
+--UPDATE Bell_Cust_Master SET ISFORDIRECTSALES='NO',ACTIONDATE=GETDATE() WHERE ISNULL(ISFORDIRECTSALES,'')='' AND LINE NOT IN ('ITEM SALE IN FACTORY','BAZAR')
+SELECT * FROM Bell_Cust_Master WHERE ISNULL(ISFORDIRECTSALES,'')=''  AND LINE NOT IN ('ITEM SALE IN FACTORY','BAZAR')
+UPDATE Bell_Cust_Master SET ISFORDIRECTSALES='YES',ACTIONDATE=GETDATE() WHERE ISNULL(ISFORDIRECTSALES,'')='' 
+  
 -- USP_GET_AREALIST_New not using    
     
 -- USP_GET_LINE_AREA_SHOP_LIST 'users'    
--- USP_GET_AREALIST 'category'    
--- USP_GET_AREALIST 'lines'    
--- USP_GET_AREALIST 'area'    
--- USP_GET_AREALIST 'BHADRACHALAM'    
--- USP_GET_AREALIST 'PARKAL'    
--- USP_GET_AREALIST 'GAFERGADH'    
+    USP_GET_AREALIST 'LINEAREASHOPS'
+ USP_GET_AREALIST 'category'    
+ USP_GET_AREALIST 'lines'    
+ USP_GET_AREALIST 'area'    
+ USP_GET_AREALIST 'BHADRACHALAM'    
+ USP_GET_AREALIST 'PARKAL'    
+ USP_GET_AREALIST 'GAFERGADH'    
+*/
 ALTER procedure USP_GET_AREALIST  
 @Type as varchar(20) = null,    
 @FROMDATE AS DATE = null,        
 @TODATE AS DATE = null        
 AS    
 Begin    
-  IF (lower(@Type) = 'users')    
+  IF (lower(@Type) = 'LINEAREASHOPS')      
+ Begin      
+    print 'its Item Categories'      
+    --Select Distinct LINE,AREA,ShopName,SALESMAN,CustomerName,MOBILE,ISFORDIRECTSALES from Bell_Cust_Master WITH (NOLOCK) where Status='Active'      
+  Select Distinct LINE,'' AREA,'' ShopName,ISNULL(SALESMAN,'') SALESMAN,'' CustomerName,'' MOBILE,
+  ISNULL(ISFORDIRECTSALES,'NO') ISFORDIRECTSALES from Bell_Cust_Master WITH (NOLOCK) where Status='Active'    
+  AND ISFORDIRECTSALES<>'YES'  
+  UNION
+  SELECT LINE,ISNULL(AREA,'') AREA,ISNULL(SHOPNAME,'') SHOPNAME,ISNULL(SALESMAN,'') SALESMAN,CustomerName,ISNULL(MOBILE,'') MOBILE,
+  ISNULL(ISFORDIRECTSALES,'NO') ISFORDIRECTSALES from Bell_Cust_Master WITH (NOLOCK) where 
+  Status='Active' AND ISFORDIRECTSALES='YES'     
+  -- AND LINE in ('BAZAR','BHAVANI','GATE','NEZAR','ITEM SALE IN FACTORY')
+ end      
+ ELSE IF (lower(@Type) = 'users')    
  Begin    
     print 'its Item Categories'    
   Select Distinct USERNAME as LINE,'' as Area,'' as ShopName,'' as CustomerName from Bell_USERS WITH (NOLOCK) where Status='display'    

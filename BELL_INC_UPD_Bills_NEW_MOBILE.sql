@@ -15,17 +15,17 @@ select * from BELL_ITEMMASTER where OFFERAVAILABLE='Y' and isnull(offeritemname,
 select * from bhavani_ER_Bills where itemcode in (1,2,3,4)
 select * from bhavani_ER_Bills where offer_item<>'' and itemcode in (1,2,3,4)
 select itemcode, itemname,packets,qty,offer_qty,offer_item from bhavani_ER_Bills where offer_item<>'' and itemcode=1 order by actiondate desc
-UPDATE BELL_ITEMMASTER SET OFFER_QTY_AVAIL = 1 where itemcode=2
-UPDATE BELL_ITEMMASTER SET OFFER_QTY_AVAIL = 1 where itemcode=1
-UPDATE BELL_ITEMMASTER SET OFFER_QTY_AVAIL = 3 where itemcode=3
-UPDATE BELL_ITEMMASTER SET OFFER_QTY_AVAIL = 3 where itemcode=4
+--UPDATE BELL_ITEMMASTER SET OFFER_QTY_AVAIL = 1 where itemcode=2
+--UPDATE BELL_ITEMMASTER SET OFFER_QTY_AVAIL = 1 where itemcode=1
+--UPDATE BELL_ITEMMASTER SET OFFER_QTY_AVAIL = 3 where itemcode=3
+--UPDATE BELL_ITEMMASTER SET OFFER_QTY_AVAIL = 3 where itemcode=4
 SELECT DESCRIPTION='OFFER : ' + OFFERITEMNAME + ' (' + CAST(OFFER_QTY_AVAIL AS VARCHAR) + ')  for ' + CAST(OFFERPAKS AS VARCHAR) + 'p'
 FROM BELL_ITEMMASTER WHERE OFFERAVAILABLE='Y' and isnull(offeritemname,'') <> ''
 
 --UPDATE BELL_ITEMMASTER SET DETAILS=''
-UPDATE BELL_ITEMMASTER SET 
-DETAILS='OFFER : ' + OFFERITEMNAME + ' (' + CAST(OFFER_QTY_AVAIL AS VARCHAR)  + ')  for ' + CAST(OFFERPAKS AS VARCHAR) + 'p'
-WHERE OFFERAVAILABLE='Y' and isnull(offeritemname,'') <> ''
+--UPDATE BELL_ITEMMASTER SET 
+--DETAILS='OFFER : ' + OFFERITEMNAME + ' (' + CAST(OFFER_QTY_AVAIL AS VARCHAR)  + ')  for ' + CAST(OFFERPAKS AS VARCHAR) + 'p'
+--WHERE OFFERAVAILABLE='Y' and isnull(offeritemname,'') <> ''
 
 --for moong dal, each 24packets one SEV MURMURA 5 RS offer
 --add new col 'MinOrderForOffer' , OfferPacks
@@ -46,6 +46,7 @@ SELECT * FROM Bell_ItemMaster WITH (NOLOCK) WHERE  ITEMCODE<10
 
 
 BELL_INC_UPD_Bills_NEW_MOBILE_working
+
 alter procedure BELL_INC_UPD_Bills_NEW_MOBILE_working
 @AREA as varchar(50),
 @AREA_LINE as varchar(50),
@@ -66,17 +67,42 @@ alter procedure BELL_INC_UPD_Bills_NEW_MOBILE_working
 @OFFER_QTY AS INTEGER=0,
 @SALESMAN AS nvarchar(30)='',
 @PAYMENT_MODE AS nvarchar(30)='',
-@MOBILEORDERDATE as DATETIME
+@MOBILEORDERDATE as DATETIME2
 AS                         
 BEGIN            
-   -- print 'billdate=' + cast(@billdate as varchar)
+
  --IF NOT EXISTS(SELECT SHOPNAME FROM Bell_Cust_Master WHERE AREA=@AREA AND SHOPNAME=@SHOP)            
  --BEGIN            
  -- INSERT INTO Bell_Cust_Master (CUSTID,AREA,SHOPNAME,[STATUS]) VALUES(0,@AREA,@SHOP,'Active')            
  --END            
  --set @BILLDATE = FORMAT(@BILLDATE, 'dd-MMM-yyyy', 'en-US')            
   
-  --set @BILLDATE = CONVERT(varchar(10),@BILLDATE,101)            
+  print 'ACTUAL BILLDATE=' + cast(@BILLDATE as varchar)
+  if ISNULL(@BILLDATE,'') = ''  OR @BILLDATE= '0001-01-01T00:00:00' OR DATEPART(year, @BILLDATE) < 1753 
+  BEGIN
+        SELECT TOP 1 @BILLDATE=BILLDATE  FROM BELL_LS WHERE AREA=@AREA ORDER BY BILLDATE DESC
+  END
+  print 'RETRIEVED BILLDATE=' + cast(@BILLDATE as varchar)
+
+   --DECLARE @SafeBillDate date = CASE 
+   --     WHEN @BILLDATE IS NULL OR DATEPART(year, @BILLDATE) < 1753 
+   --         THEN CAST(SYSDATETIME() AS date) 
+   --     ELSE CAST(@BILLDATE AS date) 
+   -- END;
+   -- SET @BILLDATE = @SafeBillDate
+   --DECLARE @MOBILEORDERDATE DATETIME2 = '0001-01-01T00:00:00';
+   --SELECT ISNULL(NULLIF(@MOBILEORDERDATE, '0001-01-01T00:00:00'), SYSDATETIME()) AS EffectiveDate
+   --SELECT @MOBILEORDERDATE=ISNULL(NULLIF(@MOBILEORDERDATE, '0001-01-01T00:00:00'), SYSDATETIME())
+   
+   --set @MOBILEORDERDATE = SYSDATETIME();
+
+    --  DECLARE @SafeMobileBillDate date = CASE 
+    --    WHEN @MOBILEORDERDATE = '0001-01-01T00:00:00' OR  ISNULL(@MOBILEORDERDATE,'')='' OR DATEPART(year, @MOBILEORDERDATE) < 1753 
+    --        THEN CAST(SYSDATETIME() AS date) 
+    --    ELSE CAST(@MOBILEORDERDATE AS date) 
+    --END;
+    --SET @MOBILEORDERDATE = @SafeMobileBillDate
+
   DECLARE @PRATE AS MONEY   --,@AREA_LINE AS VARCHAR(50)          
   IF @OFFER_QTY = 0 
   BEGIN
@@ -95,7 +121,7 @@ BEGIN
   values(@ITEMCODE,@ITEMNAME,@PRICE,@PACKETS,@QTY,@AMOUNT,@BILLNUMBER,
   cast(@BILLDATE as Date),@AREA,@SHOP,@USERNAME,@PRATE,
   ISNULL(@AREA_LINE,@AREA),@DAMAGES,@DISCOUNTED,@OFFER_ITEM,@OFFER_RATE,@OFFER_QTY,@SALESMAN,
-  @PAYMENT_MODE,@BILLDATE)
+  @PAYMENT_MODE,@MOBILEORDERDATE)
           
 	  if (select count(1) from Bell_Cust_Master WITH (NOLOCK)  where line = @area  and IsForDirectSales='Y')  > 0         
 	  begin        
@@ -108,7 +134,7 @@ BEGIN
         UPDATE bhavani_ER_Bills SET RATE=@PRICE,PACKETS=@PACKETS,QTY=@QTY,AMOUNT=@AMOUNT,USERNAME=@USERNAME          
       ,AREA_LINE=ISNULL(@AREA_LINE,@AREA),DAMAGES=@DAMAGES,DISCOUNT=@DISCOUNTED,
       OFFER_ITEM=@OFFER_ITEM,OFFER_RATE=@OFFER_RATE,OFFER_QTY=@OFFER_QTY,SALESMAN=@SALESMAN,
-      BILLDATE=cast(@BILLDATE as Date),MobileOrderDate=@BILLDATE,PAYMENT_MODE=@PAYMENT_MODE,ACTIONDATE=GETDATE()
+      BILLDATE=cast(@BILLDATE as Date),MobileOrderDate=@MOBILEORDERDATE,PAYMENT_MODE=@PAYMENT_MODE,ACTIONDATE=GETDATE()
       WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME AND AREA=@AREA AND SHOPNAME=@SHOP AND          
         BILLNUMBER=@BILLNUMBER AND CONVERT(varchar(10),BILLDATE,101) = @BILLDATE            
           

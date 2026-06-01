@@ -16,28 +16,49 @@ select * from tblAllMasterData
 --update tblAllMasterData set FIELDVALUE='https://myorders.zionwellmark.in/Bell_Images/' where fieldtype='Bell_ImageServerURL'
 update tblAllMasterData set FIELDVALUE='https://bellbrandbhavanikhara.in/bell_item_images/' where fieldtype='Bell_ImageServerURL'
 --INSERT INTO tblAllMasterData(FIELDTYPE, FIELDVALUE,Description) VALUES('Bell_ImageServerURL','https://myorders.zionwellmark.in/Bell_Image/','for Bell Brand')
-select * from tblItemMaster
-select * from Bell_ItemMaster 
+
+select * from Bell_ItemMaster where BILLDATE = '2026-05-08' and area='Siricilla'
+select * FROM BELL_ItemMaster A with (nolock) 
+
+			 and B.BILLDATE=@ORDERDATE and B.AREA=@LINE Where A.status='Active' and A.CATEGORY<>'RAW MATERIALS' 
+
 --ALTER TABLE Bell_ItemMaster MODIFY COL DETAILS
 ALTER TABLE Bell_ItemMaster ADD DETAILS NVARCHAR(250) NULL
 ALTER TABLE Bell_ItemMaster ADD ImageUrl NVARCHAR(200) NULL
-*/
 
-select * from Bell_LS where area='Asifabad' and username='ORDERS' AND BILLDATE <= '2026-02-28'
-select * from Bell_LS where username='ORDERS' AND BILLDATE <= '2026-02-28'  --CAN BE DELETED
+   Bell_APP_GET_ALL_ITEMS '2026-04-30','KORUTLA','BILLS_SHOPS_COUNT'
+
+ select * from Bell_LS where area='Asifabad' and username='ORDERS' AND BILLDATE <= '2026-02-28'
+select * from Bell_LS where  BILLDATE = '2026-05-08' and area='Siricilla'
+
+select * from BELL_ItemMaster where Itemname in (select Itemname from Bell_LS where  BILLDATE = '2026-05-08' and area='Siricilla')
+select * from BELL_ItemMaster where Itemname in (select Itemname from Bell_LS where  BILLDATE = '2026-05-09' and area='Yellandu')
+select * from Bell_LS_ORDERS where  BILLDATE = '2026-05-08' and area='Siricilla'
+129	BOURBUN 10RS
+127	50-50 10RS
+130	LITTILE HEARTS 5RS
+97	JUMBO MYSOREPAK JAR 5RS
+362	DETERGENT 3KG
+68	KRUPA PAPIDI(BANARAS)
 
 ALTER TABLE BELL_LS ADD STATUS VARCHAR(10) DEFAULT ''
 -- STATUS CAN BE 'LOADED', 'PENDING' 'COMPLETED'
-'ECLAIRS 50 NP'
 -- Bell_APP_GET_ALL_ITEMS '2026-03-31','Maripeda', 'UPDATE_DISCOUNT'
 
--- Bell_APP_GET_ALL_ITEMS '2026-03-31','Jangaon', 'ONLY_ORDERS'
+-- Bell_APP_GET_ALL_ITEMS '2026-05-21','GODAVARI', 'FORMOBILE_ALL'
+
+-- Bell_APP_GET_ALL_ITEMS '2026-05-11','PALAKURTHY', 'FORMOBILE_ALL'
+
+-- Bell_APP_GET_ALL_ITEMS '2026-05-09','Siricilla', 'FORMOBILE_ALL'
 -- Bell_APP_GET_ALL_ITEMS '2026-03-31','Jangaon', 'FORMOBILE_ALL'
 -- Bell_APP_GET_ALL_ITEMS '2026-03-26','NARSAMPET', 'FORMOBILE_ALL'
 -- Bell_APP_GET_ALL_ITEMS '2026-03-23','KHAMMAM', 'FORMOBILE_ALL'
 -- Bell_APP_GET_ALL_ITEMS '2025-12-17','BAYYARAM', 'FORMOBILE_ALL'
--- Bell_APP_GET_ALL_ITEMS 'FORMOBILE_ALL'
+ Bell_APP_GET_ALL_ITEMS '2026-05-18','MARIPEDA', 'FORMOBILE_LOADING'
 -- Bell_APP_GET_ALL_ITEMS ''
+
+*/
+
 alter Procedure Bell_APP_GET_ALL_ITEMS
 @ORDERDATE DATE,
 @LINE varchar(50) ,
@@ -69,7 +90,7 @@ BEGIN
 	 --[Description]
 	 Where status='Active' and CATEGORY<>'RAW MATERIALS'  order by ItemCode
   END
-  ELSE IF @OPTION='FORMOBILE_ALL' --SHOW ALL ITEMS
+  ELSE IF @OPTION='FORMOBILE_ALL' --TO SHOW ALL ITEMS FROM BELL_LS Table
   BEGIN
 		PRINT 'SHOWING ALL ITEMS FOR MOBILE APP'
 			--Select ITEMID as ID, ITEMCODE,ItemName, Itemname as Name,MRP,Rate1, Rate1 as Price,PACKINGTYPE,'' as Qty,   
@@ -87,6 +108,19 @@ BEGIN
 			 isnull(B.T_B,0) as AVAILABLE_PAKS
 			 FROM BELL_ItemMaster A with (nolock) LEFT JOIN Bell_LS B with (nolock) ON A.ITEMCODE=B.ITEMCODE AND A.ITEMNAME=B.ITEMNAME
 			 and B.BILLDATE=@ORDERDATE and B.AREA=@LINE Where A.status='Active' and A.CATEGORY<>'RAW MATERIALS' 
+			 order by A.ItemCode
+  END
+  ELSE IF @OPTION='FORMOBILE_LOADING'  -- TO SHOW ALL ITEMS from ORDERS TABLE for VAN Loading and approval. added on 30-May26.
+  BEGIN
+		Select A.ITEMID as ID, A.ITEMCODE,A.ItemName, A.Itemname as Name,A.MRP,A.Rate1, A.Rate1 as Price,A.PACKINGTYPE,'' as Qty,   
+			 A.TOTALITEMSINPACK,'' AS TOTALITEMSINCARTON,A.CATEGORY, 1 as CategorID, @ImageURL + replace(ImageUrl,' ','%20') as ImageUrl, 
+			 DETAILS AS [Description] ,A.DiscountPercent,
+			 A.OFFERAVAILABLE,isnull(A.OFFERITEMNAME,'') OFFERITEMNAME ,isnull(A.OFFERPAKS,0) MINORDERFOROFFER,
+			 isnull(A.OFFER_QTY_AVAIL,0) AS OFFER_QTY_AVAIL,
+			 trim(@ImageURL + replace(A.ImageUrl,' ','%20' )+ @RND) as ImageUrlNew,A.ImageUrl as ImageName,
+			 isnull(B.T_B,0) as AVAILABLE_PAKS
+			 FROM BELL_ItemMaster A with (nolock) LEFT JOIN Bell_LS_ORDERS B with (nolock) ON A.ITEMCODE=B.ITEMCODE AND A.ITEMNAME=B.ITEMNAME
+			 and B.BILLDATE=@ORDERDATE and B.AREA=@LINE Where A.status='Active' and A.CATEGORY<>'RAW MATERIALS'
 			 order by A.ItemCode
   END
   ELSE IF @OPTION='ONLY_ORDERS' --SHOW ONLY ORDER ITEMS THAT HAVE AVAILABLE PAK>0
@@ -115,6 +149,11 @@ BEGIN
    ELSE IF @OPTION = 'UPDATE_DISCOUNT' --TO UPDATE DISCOUNT TO ZERO FOR NON ELIGIBLE ITEMS.
   BEGIN
 		PRINT 'UPDATING DISCOUNT TO ZERO FOR NON ELIGIBLE ITEMS.'
+		  print 'ACTUAL BILLDATE=' + cast(@ORDERDATE as varchar)
+		  if ISNULL(@ORDERDATE,'') = ''  OR DATEPART(year, @ORDERDATE) < 1753 
+		  BEGIN
+				SELECT TOP 1 @ORDERDATE=BILLDATE  FROM BELL_LS WHERE AREA=@LINE ORDER BY BILLDATE DESC
+		  END
 		Print 'BillDate=' + cast(@ORDERDATE AS VARCHAR(30)) + 'Line=' + @LINE
 		/* select * from bhavani_ER_Bills where area=@LINE and billdate=@ORDERDATE and discount > 0 
 		and billnumber not in (
@@ -127,4 +166,15 @@ BEGIN
 		group by Billnumber,Area Having sum(amount) >=5000	)
 
 	END
+	ELSE IF @OPTION = 'BILLS_SHOPS_COUNT'
+    BEGIN
+            DECLARE @TOT_BILLS INT,@TOT_SHOPS INT
+            WITH TAB1 AS (
+            SELECT DISTINCT BILLNUMBER AS BILLS FROM bhavani_ER_Bills WITH (NOLOCK) where AREA=@LINE and billdate=@ORDERDATE
+            GROUP BY SHOPNAME,BILLNUMBER  )  
+            SELECT @TOT_BILLS=(SELECT COUNT(BILLS) FROM TAB1)
+
+            SELECT @TOT_SHOPS=COUNT(1) FROM BELL_APP_SHOPS_VISIT_INFO WITH (NOLOCK) where  LINE=@LINE AND orderdate=@ORDERDATE
+            SELECT @TOT_BILLS AS TOT_BILLS,@TOT_SHOPS AS TOT_SHOPS 
+    END
 END  
