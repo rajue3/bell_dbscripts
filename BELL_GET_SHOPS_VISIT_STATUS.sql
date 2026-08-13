@@ -1,0 +1,76 @@
+/*             
+SELECT * FROM BELL_APP_SHOPS_VISIT_INFO WHERE LINE='HANAMKONDA' AND ORDERDATE>'2026-04-01'
+ORDER BY SHOPNAME
+BANGALORE  BAKERY (HNK)(KOTHUR
+
+SELECT DISTINCT LINE,ORDERDATE FROM BELL_APP_SHOPS_VISIT_INFO WHERE ORDERDATE>='2026-04-01' ORDER BY LINE
+
+BELL_GET_SHOPS_VISIT_STATUS  'HANAMKONDA','2026-04-01','2026-05-29','BILLED','DATEWISEREPORT'
+BELL_GET_SHOPS_VISIT_STATUS  'HANAMKONDA','2026-04-01','2026-05-29','','DATEWISEREPORT'
+BELL_GET_SHOPS_VISIT_STATUS  'PARKAL','2026-04-01','2026-05-30','ALL','DATEWISEREPORT'      
+
+BELL_GET_SHOPS_VISIT_STATUS  'MADIKONDA','2026-04-29','2026-04-29','','BILLDATE'      
+BELL_GET_SHOPS_VISIT_STATUS  'PARKAL','2026-04-29','2026-04-30','ALL','BILLDATE'      
+BELL_GET_SHOPS_VISIT_STATUS  'PARKAL','2026-04-29','2026-04-30','SHOP CLOSED','BILLDATE'      
+
+*/    
+ALTER Procedure BELL_GET_SHOPS_VISIT_STATUS        
+@LINE as varchar(30) = null,        
+@FROMDATE AS DATE = null,        
+@TODATE AS DATE = null,        
+@VISIT_STATUS AS VARCHAR(25),
+@SEARCHBY AS VARCHAR(25)        
+AS                     
+BEGIN          
+        if @VISIT_STATUS=''  
+        begin
+            set @VISIT_STATUS='ALL' 
+        end 
+ IF (ISNULL(@FromDate,'') <> '' )        
+ BEGIN        
+  IF @SEARCHBY='BILLDATE'        
+  BEGIN        
+        SELECT * FROM BELL_APP_SHOPS_VISIT_INFO A WITH (NOLOCK)  
+        WHERE (@LINE IS NULL OR LOWER(@LINE) = 'all' OR A.LINE = @LINE)    
+          AND CAST(A.ORDERDATE AS DATE) >= @FROMDATE  AND CAST(A.ORDERDATE AS DATE) <= @TODATE 
+         AND SHOP_VISIT_STATUS=(CASE WHEN @VISIT_STATUS='ALL' THEN SHOP_VISIT_STATUS ELSE @VISIT_STATUS  END) 
+        --AND CONVERT(varchar(10),A.ActionDate,102) = CONVERT(varchar(10),@FROMDATE,102)     
+         
+    END
+    ELSE IF @SEARCHBY='DATEWISEREPORT'        
+    BEGIN        
+        DECLARE @cols AS NVARCHAR(MAX), @query  AS NVARCHAR(MAX)        
+        CREATE TABLE dbo.#TEMP_DATEWISEREPORT (BILLDATE VARCHAR(20), LINE VARCHAR(50),AREA VARCHAR(50),SHOPNAME VARCHAR(50), 
+         SHOP_VISIT_STATUS VARCHAR(20),TIME_TAKEN VARCHAR(15))
+        
+        CREATE TABLE dbo.#TEMP_DATEWISEREPORT_HEADER (HEADER_NAME DATE)        
+    
+              Insert into #TEMP_DATEWISEREPORT        
+              select   CONVERT(varchar,ORDERDATE,6) as BILLDATE,LINE,AREA,
+              SHOPNAME, SHOP_VISIT_STATUS,
+              dbo.GetTimeDiff(BILLING_START_DATE,BILLING_END_DATE) AS TIME_TAKEN           
+              from BELL_APP_SHOPS_VISIT_INFO  WITH (NOLOCK)  WHERE LINE=@LINE
+               --AND CAST(A.ORDERDATE AS DATE) >= @FROMDATE  AND CAST(A.ORDERDATE AS DATE) <= @TODATE 
+              and (ORDERDATE BETWEEN CONVERT(nvarchar(10),@FROMDATE,101) AND CONVERT(nvarchar(10),@TODATE ,101))        
+             AND SHOP_VISIT_STATUS=(CASE WHEN @VISIT_STATUS='ALL' THEN SHOP_VISIT_STATUS ELSE @VISIT_STATUS  END) 
+
+             --INSERT INTO Bell_REPORT_HEADER SELECT DISTINCT BILLDATE FROM #TEMP_SHOPWISEWITHOUTBILL  order by BILLDATE DESC  --(STORING BILLDATE INTO SHOPNAME COL)                
+            -- select @cols = STUFF((SELECT ',' + '['+ QUOTENAME(HEADER_NAME) + ']'        
+               --    from Bell_REPORT_HEADER group by HEADER_NAME FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'),1,1,'')        
+              set @query = N' INSERT INTO #TEMP_DATEWISEREPORT_HEADER SELECT DISTINCT CONVERT(varchar,BILLDATE,6) AS BILLDATE FROM #TEMP_DATEWISEREPORT '         
+              PRINT @query      
+              EXEC sp_executesql @query          
+
+            select @cols = STUFF((SELECT ',' + '['+ QUOTENAME(CONVERT(varchar,HEADER_NAME,6)) + ']'            
+                 from #TEMP_DATEWISEREPORT_HEADER group by HEADER_NAME order by HEADER_NAME ASC FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'),1,1,'')        
+            print @cols 
+
+             set @query = 'SELECT * from (select * from #TEMP_DATEWISEREPORT '          
+                +' ) x pivot (MAX(TIME_TAKEN) for BILLDATE in (' + REPLACE(REPLACE(@cols,'[[','['),']]',']') + ') ) p  ORDER BY SHOPNAME'        
+        
+              --PRINT @query        
+              exec sp_executesql @query;        
+
+    END
+ END        
+END 

@@ -1,0 +1,284 @@
+/*
+--ALTER TABLE Bell_LS_ORDERS ALTER COLUMN WEBSYNCED VARCHAR(15)
+ALTER TABLE Bell_LS ALTER COLUMN STATUS VARCHAR(30)
+
+select * from Bell_LS where area='kothaguda' and billdate='2026-Mar-30'
+select * from Bell_LS where USERNAME='From_Mobile'
+--UPDATE Bell_LS SET R_B=0 where area='kothaguda' and billdate='2026-Mar-30'
+
+SELECT ISJSON('{"test":1}') AS IsJsonSupported;
+SELECT * 
+FROM OPENJSON('[{"BillDate":"2026-03-30","AREA":"kothaguda","ITEMCODE":1,"ITEMNAME":"khara 5 RS","RET_PAK":5,"DAM_PAK":0,"USERNAME":"From_Mobile","SALESMAN":"TEJASWINI"}]')
+WITH (
+    BillDate DATE,
+    AREA VARCHAR(30),
+    ITEMCODE INT,
+    ITEMNAME VARCHAR(30),
+    RET_PAK INT,
+    DAM_PAK INT,
+    USERNAME VARCHAR(30),
+    SALESMAN VARCHAR(30)
+);
+
+SELECT REPLACE('CHECK','E','e')
+
+BELL_UPDATE_LS_RETURN_ITEMS_MOBILE_JSON '[{"BillDate":"2026-03-30","AREA":"kothaguda","ITEMCODE":1,"ITEMNAME":"khara 5 RS","RET_PAK":5,"DAM_PAK":0,"USERNAME":"From_Mobile","SALESMAN":"TEJASWINI"}]'
+
+BELL_UPDATE_LS_RETURN_ITEMS_MOBILE_JSON '[{"ITEMCODE":1,"ITEMNAME":"khara 5 RS","AVAILABLE_PAKS":156,"LINE":"KOTHAGUDA","SALESMAN":"GOPAL.P","BillDate":"2026-03-30"},
+{"ITEMCODE":2,"ITEMNAME":"moong dal 5 RS","AVAILABLE_PAKS":264,"LINE":"KOTHAGUDA","SALESMAN":"GOPAL.P","BillDate":"2026-03-30"},
+{"ITEMCODE":5,"ITEMNAME":"ABCD 5 RS","AVAILABLE_PAKS":48,"LINE":"KOTHAGUDA","SALESMAN":"GOPAL.P","BillDate":"2026-03-30"},
+{"ITEMCODE":6,"ITEMNAME":"Animal 5 RS","AVAILABLE_PAKS":48,"LINE":"KOTHAGUDA","SALESMAN":"GOPAL.P","BillDate":"2026-03-30"},
+{"ITEMCODE":7,"ITEMNAME":"Sticks 5 RS","AVAILABLE_PAKS":36,"LINE":"KOTHAGUDA","SALESMAN":"GOPAL.P","BillDate":"2026-03-30"},
+{"ITEMCODE":8,"ITEMNAME":"WHEELS 5 RS","AVAILABLE_PAKS":48,"LINE":"KOTHAGUDA","SALESMAN":"GOPAL.P","BillDate":"2026-03-30"},
+{"ITEMCODE":9,"ITEMNAME":"Soya sticks 5 RS","AVAILABLE_PAKS":84,"LINE":"KOTHAGUDA","SALESMAN":"GOPAL.P","BillDate":"2026-03-30"}]'
+
+select * from Bell_LS  where area='ADILABAD' and billdate='2026-07-12'
+select * from Bell_LS_ORDERS  where area='ADILABAD' 
+--DELETE FROM Bell_LS_ORDERS  where area='ADILABAD' 
+
+BELL_UPDATE_LS_RETURN_ITEMS_MOBILE_JSON '[{"BillDate":"2026-07-12","LINE":"ADILABAD","ITEMCODE":"1","ITEMNAME":"khara 5 RS","RATE":"42","PACKING_QTY":"10C (12)","QTY":"120","USERNAME":"ORDERS"},
+{"BillDate":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"2","ITEMNAME":"moong dal 5 RS","RATE":"42","PACKING_QTY":"20C (12)","QTY":"240","USERNAME":"ORDERS"},
+{"BillDate":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"3","ITEMNAME":"Alubujiya 5 RS","RATE":"42","PACKING_QTY":"1C (12)","QTY":"12","USERNAME":"ORDERS"},
+{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"4","ITEMNAME":"Bhoondi 5 RS","RATE":"42","PACKING_QTY":"2C (12)","QTY":"24","USERNAME":"ORDERS"},
+{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"5","ITEMNAME":"ABCD 5 RS","RATE":"43","PACKING_QTY":"3C (12)","QTY":"36","USERNAME":"ORDERS"},
+{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"6","ITEMNAME":"Animal 5 RS","RATE":"43","PACKING_QTY":"4C (12)","QTY":"48","USERNAME":"ORDERS"},
+{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"7","ITEMNAME":"Sticks 5 RS","RATE":"43","PACKING_QTY":"5C (12)","QTY":"60","USERNAME":"ORDERS"},
+{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"8","ITEMNAME":"WHEELS 5 RS","RATE":"43","PACKING_QTY":"0C (12)","QTY":"0","USERNAME":"ORDERS"},
+{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"9","ITEMNAME":"Soya sticks 5 RS","RATE":"42","PACKING_QTY":"0C (12)","QTY":"0","USERNAME":"ORDERS"},
+{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"10","ITEMNAME":"SEV MURMURA 5 RS","RATE":"42","PACKING_QTY":"0C (12)","QTY":"0","USERNAME":"ORDERS"},
+{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"13","ITEMNAME":"Khara 700 GM","RATE":"110","PACKING_QTY":"0C (10)","QTY":"0","USERNAME":"ORDERS"},
+{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"14","ITEMNAME":"Khara 325 GM","RATE":"55","PACKING_QTY":"0C (20)","QTY":"0","USERNAME":"ORDERS"},
+{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"15","ITEMNAME":"Bhoondhi 325 GM","RATE":"55","PACKING_QTY":"0C (20)","QTY":"0","USERNAME":"ORDERS"},
+{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"624","ITEMNAME":"COCO- COLA 250ML","RATE":"420","PACKING_QTY":"0C (1)","QTY":"0","USERNAME":"ORDERS"},{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"625","ITEMNAME":"FANTA 250ML","RATE":"455","PACKING_QTY":"0C (1)","QTY":"0","USERNAME":"ORDERS"},{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"950","ITEMNAME":"OFFER ITEM THUMUS- UP 250 ML","RATE":"16.25","PACKING_QTY":"0P (9)","QTY":"0","USERNAME":"ORDERS"},{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"951","ITEMNAME":"OFFER ITEM SPRITE 250 ML","RATE":"16.25","PACKING_QTY":"0P (9)","QTY":"0","USERNAME":"ORDERS"},{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"952","ITEMNAME":"OFFER ITEM FANTA 250 ML","RATE":"16.25","PACKING_QTY":"0C (1)","QTY":"0","USERNAME":"ORDERS"},{"BILLDATE":"12-Jul-2026","LINE":"ADILABAD","ITEMCODE":"953","ITEMNAME":"OFFER ITEM 12 pics Chikky","RATE":"8.5","PACKING_QTY":"0P (1)","QTY":"0","USERNAME":"ORDERS"}]',
+'ORDERS','ADILABAD','2026-07-12'
+
+SELECT * FROM BELL_LS
+select * from Bell_LS_ORDERS WHERE BILLDATE='2026-07-12' AND AREA='ADILABAD' ORDER BY ITEMNAME
+select * from Bell_LS WHERE  BILLDATE='2026-07-12'  AND AREA='ADILABAD' ORDER BY ITEMNAME
+delete from Bell_LS WHERE  BILLDATE='2026-07-12'  AND AREA='ADILABAD'
+delete from Bell_LS_ORDERS WHERE  BILLDATE='2026-07-12'  AND AREA='ADILABAD'
+
+BELL_UPDATE_LS_RETURN_ITEMS_MOBILE_JSON 
+'[{"BILLDATE":"2026-07-12","LINE":"ADILABAD","ITEMCODE":"1","ITEMNAME":"khara 5 RS","RATE":"57.65","QTY":"10C (12)","T_B":"120","R_B":"2","USERNAME":"RAJU"}]',
+'LS','ADILABAD','2026-07-12'
+
+BELL_UPDATE_LS_RETURN_ITEMS_MOBILE_JSON '[{"BillDate":"2026-07-12","LINE":"ADILABAD","ITEMCODE":"1","ITEMNAME":"khara 5 RS","RATE":"57.75","PACKING_QTY":"10C (12)","QTY":"120","USERNAME":"ORDERS"}]',
+'ORDERS','ADILABAD','2026-07-12'
+
+{"BILLDATE":"2026-07-12","LINE":"ADILABAD","ITEMCODE":"2","ITEMNAME":"moong dal 5 RS","RATE":"42","QTY":"20C (12)","T_B":"240","R_B":"1","USERNAME":"RAJU"},
+{"BILLDATE":"2026-07-12","LINE":"ADILABAD","ITEMCODE":"3","ITEMNAME":"Alubujiya 5 RS","RATE":"42","QTY":"1C (12)","T_B":"12","R_B":"0","USERNAME":"RAJU"},
+{"BILLDATE":"2026-07-12","LINE":"ADILABAD","ITEMCODE":"4","ITEMNAME":"Bhoondi 5 RS","RATE":"42","QTY":"2C (12)","T_B":"24","R_B":"0","USERNAME":"RAJU"},
+{"BILLDATE":"2026-07-12","LINE":"ADILABAD","ITEMCODE":"5","ITEMNAME":"ABCD 5 RS","RATE":"43","QTY":"3C (12)","T_B":"36","R_B":"0","USERNAME":"RAJU"},
+{"BILLDATE":"2026-07-12","LINE":"ADILABAD","ITEMCODE":"6","ITEMNAME":"Animal 5 RS","RATE":"43","QTY":"4C (12)","T_B":"48","R_B":"0","USERNAME":"RAJU"},
+{"BILLDATE":"2026-07-12","LINE":"ADILABAD","ITEMCODE":"7","ITEMNAME":"Sticks 5 RS","RATE":"43","QTY":"5C (12)","T_B":"60","R_B":"0","USERNAME":"RAJU"}]',
+'LS','ADILABAD','2026-07-12'
+
+BELL_UPDATE_LS_RETURN_ITEMS_MOBILE_JSON   
+  '[{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"1","ITEMNAME":"khara 5 RS","RATE":"42","QTY":"20C (12)","T_B":"240","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"2","ITEMNAME":"moong dal 5 RS","RATE":"42","QTY":"50C (12)","T_B":"600","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"5","ITEMNAME":"ABCD 5 RS","RATE":"43","QTY":"2C (12)","T_B":"24","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"6","ITEMNAME":"Animal 5 RS","RATE":"43","QTY":"2C (12)","T_B":"24","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"7","ITEMNAME":"Sticks 5 RS","RATE":"43","QTY":"2C (12)","T_B":"24","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"8","ITEMNAME":"WHEELS 5 RS","RATE":"43","QTY":"2C (12)","T_B":"24","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"9","ITEMNAME":"Soya sticks 5 RS","RATE":"42","QTY":"10C (12)","T
+_B":"120","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"10","ITEMNAME":"SEV MURMURA 5 RS","RATE":"42","QTY":"8C (12)","T_B":"96","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"14","ITEMNAME":"Khara 325 GM","RATE":"55","QTY":"18C (20)","T_B":"360","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"21","ITEMNAME":"Khara 10 RS","RATE":"7","QTY":"1B (70)","T_B":"70","R_B":"0","USERNAME":"RAJU"},
+{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"30","ITEMNAME":"CHIPS 5RS","RATE":"57.75","QTY":"3C (16)","T_B":"48","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"40","ITEMNAME":"CHEKODI 250GM","RATE":"40","QTY":"1C (20)","T_B":"20","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"60","ITEMNAME":"ROUND CHIKKY","RATE":"20","QTY":"42K (10)","T_B":"420","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"64","ITEMNA
+ME":"12 pics Chikky","RATE":"8.5","QTY":"93D (12)","T_B":"1116","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"67","ITEMNAME":"BELL SOAN PAPIDI 5 Rs","RATE":"180","QTY":"2C (6)","T_B":"12","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"69","ITEMNAME":"Dry Jamun 1 Rs","RATE":"70","QTY":"2C (12)","T_B":"24","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"70","ITEMNAME":"KRUPA SOANPAPIDI 2RS","RATE":"110","QTY":"1C (12)","T_B":"12","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"74","ITEMNAME":"Mysorepak 5 Rs","RATE":"130","QTY":"1C (6)","T_B":"6","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"75","ITEMNAME":"Kajapuri 5 Rs","RATE":"115","QTY":"1C (6)","T_B":"6","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"76","ITEMNAME":"Kcr Kova 1 Rs","RATE":"50","QTY":"1C (36)","T_B":"36","R_B":"0","USERNAME":"RAJ
+U"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"77","ITEMNAME":"Kcr Kova 2 Rs","RATE":"100","QTY":"1C (12)","T_B":"12","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"78","ITEMNAME":"Kcr Kova 5 Rs","RATE":"100","QTY":"10 P(12)","T_B":"10","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"83","ITEMNAME":"NICE COVA JAR","RATE":"175","QTY":"1C (8)","T_B":"8","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"92","ITEMNAME":"BELL MYSOREPAK 5RS","RATE":"175","QTY":"8P (1)","T_B":"8","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"101","ITEMNAME":"KRAZY KRAZY(CRAKER) 5 RS","RATE":"37.5","QTY":"20C (14)","T_B":"280","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"102","ITEMNAME":"KRAZY KRAZY(CRAKER) 3RS","RATE":"62.5","QTY":"10C (8)","T_B":"80","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"103","ITEMNA
+ME":"MARIE SUMO 5 RS","RATE":"41.66","QTY":"20C (12)","T_B":"240","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"104","ITEMNAME":"MILKVITA 5 RS","RATE":"43.33","QTY":"15C (12)","T_B":"180","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"105","ITEMNAME":"EVERDAY BUTTER 5 RS","RATE":"37.5","QTY":"128 P(16)","T_B":"128","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"106","ITEMNAME":"HI-FUN(CREAM)5 RS","RATE":"37.5","QTY":"128 P(16)","T_B":"128","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"107","ITEMNAME":"BOURBON5 RS","RATE":"46.66","QTY":"96 P(12)","T_B":"96","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"125","ITEMNAME":"ROSE WAFER 1RS","RATE":"40","QTY":"2C (12)","T_B":"24","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"160","ITEMNAME":"BUTTER FUN 50NP","RATE":"44","QTY":"53 P(34)","T_B":"53","R
+_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"161","ITEMNAME":"COFFEE STAR 50NP","RATE":"44","QTY":"34 P(34)","T_B":"34","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"162","ITEMNAME":"FRUITY 50NP","RATE":"49","QTY":"14 P(34)","T_B":"14","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"165","ITEMNAME":"COFFE GOLD JAR 1/-","RATE":"107","QTY":"16 P(16)","T_B":"16","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"166","ITEMNAME":"FRUITO JELLY JAR","RATE":"75","QTY":"16 P(16)","T_B":"16","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"168","ITEMNAME":"FRUITO POP JAR 2RS","RATE":"97","QTY":"12 P(12)","T_B":"12","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"170","ITEMNAME":"CHACO DAIRY BLITZ 5RS","RATE":"93","QTY":"18 P(18)","T_B":"18","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","
+ITEMCODE":"173","ITEMNAME":"TRUFFELLO JAR (12P) 5RS","RATE":"160","QTY":"9 P(12)","T_B":"9","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"175","ITEMNAME":"MONSTER POP 5RS","RATE":"150","QTY":"9 P(9)","T_B":"9","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"178","ITEMNAME":"PLAIN LOLIPOP 1RS","RATE":"42","QTY":"32 P(32)","T_B":"32","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"184","ITEMNAME":"FUNBON JAR 1RS","RATE":"80","QTY":"48 P(16)","T_B":"48","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"186","ITEMNAME":"BUTTER FUN JAR 1RS","RATE":"107","QTY":"16 P(16)","T_B":"16","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"188","ITEMNAME":"NARIYAL JAR 1RS","RATE":"107","QTY":"10 P(16)","T_B":"10","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"198","ITEMNAME":"MONSTER BITZ 5RS","RATE":"135","QTY":"16P 
+(1)","T_B":"16","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"207","ITEMNAME":"PARTY ROLLS 5RS","RATE":"90","QTY":"1C (24)","T_B":"24","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"214","ITEMNAME":"NOU STAR JAR 5RS","RATE":"130","QTY":"24 P(18)","T_B":"24","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"215","ITEMNAME":"MILKY STAR 5RS","RATE":"130","QTY":"9 P(18)","T_B":"9","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"218","ITEMNAME":"WAFIX 5RS","RATE":"135","QTY":"12P (1)","T_B":"12","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"253","ITEMNAME":"MILK ECLAIRS PKT 1/-","RATE":"53","QTY":"36 P(36)","T_B":"36","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"254","ITEMNAME":"ECLAIRS 50 NP","RATE":"25","QTY":"75 P(40)","T_B":"75","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR
+","ITEMCODE":"300","ITEMNAME":"CAKE 1RS","RATE":"15","QTY":"480 P(40)","T_B":"480","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"301","ITEMNAME":"CAKE TIME 5RS","RATE":"145","QTY":"12 P(6)","T_B":"12","R_B":"0","USERNAME":"RAJU"},{"BILLDATE":"2026-07-25","LINE":"THORRUR","ITEMCODE":"302","ITEMNAME":"TWERK 5RS","RATE":"100","QTY":"1C (16)","T_B":"16","R_B":"0","USERNAME":"RAJU"}]'
+,'LS','ADILABAD','2026-07-12'  
+
+
+*/  
+ALTER PROCEDURE BELL_UPDATE_LS_RETURN_ITEMS_MOBILE_JSON  
+    @JsonData NVARCHAR(MAX),  
+    @OPERATION VARCHAR(30),  
+    @LINE VARCHAR(50),  
+    @ORDERDATE DATE  
+AS  
+BEGIN  
+    SET NOCOUNT ON;  
+  
+    SET @JsonData = REPLACE(@JsonData,'\','')  
+  
+    -- MODIFIED 'LS' CODE ON 12-JUL-26  
+    IF @OPERATION = 'LS'  
+    BEGIN  
+            -- Parse JSON into a table variable  
+            ;WITH JsonData AS (  
+                SELECT   
+                    BILLDATE,  
+                    LINE,  
+                    ITEMCODE,  
+                    ITEMNAME,  
+                    RATE,  
+                    QTY,  
+                    T_B,  
+                    R_B,  
+                    USERNAME,  
+                    SALESMAN  
+                FROM OPENJSON(@JsonData)  
+                WITH (  
+                    BILLDATE DATE,  
+                    LINE  VARCHAR(30),  
+                    ITEMCODE   INT,  
+                    ITEMNAME  VARCHAR(30),  
+                    RATE MONEY,  
+                    QTY VARCHAR(20),  
+                    T_B  INT,  
+                    R_B  INT,  
+                    USERNAME  VARCHAR(30),  
+                    SALESMAN VARCHAR(30)  
+                )  
+            )  
+            -- commented on 12-Jul-26 , need to test  
+            --UPDATE Bell_LS SET USERNAME = p.USERNAME, [STATUS] = p.SALESMAN, R_B = p.T_B,ACTIONDATE = GETDATE()  
+            --FROM Bell_LS b  INNER JOIN JsonData p ON b.ITEMCODE = p.ITEMCODE AND b.ITEMNAME = p.ITEMNAME  
+            --   AND b.AREA = p.LINE  AND b.BILLDATE = p.BillDate;  
+  
+             MERGE BELL_LS AS target  
+            USING JsonData AS source  
+               ON target.AREA = source.LINE  
+               AND target.BILLDATE = source.BILLDATE   
+              -- AND target.ITEMNAME = source.ITEMNAME  
+               AND target.ITEMCODE = source.ITEMCODE  
+            WHEN MATCHED THEN  
+                UPDATE SET   
+                    target.T_B = source.T_B, target.QTY=source.QTY,STATUS='VERIFIED',  
+                    target.ITEMNAME = source.ITEMNAME, target.RATE=source.RATE, 
+                    target.USERNAME=source.USERNAME,target.ACTIONDATE = GETDATE()  
+            WHEN NOT MATCHED AND source.T_B > 0 THEN  
+            INSERT (ITEMCODE,ITEMNAME,RATE,QTY,BILLDATE,AREA,USERNAME,T_B,R_B,[STATUS])   
+           VALUES(source.ITEMCODE,source.ITEMNAME,source.RATE,source.QTY,source.BILLDATE,source.LINE,source.USERNAME,source.T_B,R_B,'VERIFIED');  
+        END  
+        ELSE IF @OPERATION = 'ORDERS'  
+        BEGIN          
+            --** USING WEBSYNCED TO MAKE SURE IT IS INSERTED FROM MOBILE APP.  OTHERWISE IT WILL DELETE OTHER RECORDS.  
+            ;WITH JsonData AS (  
+                SELECT   
+                    BillDate,  
+                    LINE,  
+                    ITEMCODE,  
+                    ITEMNAME,  
+                    RATE,  
+                    PACKING_QTY,  
+                    QTY,  
+                    'ORDERS' as USERNAME,  
+                    SALESMAN  
+                FROM OPENJSON(@JsonData)  
+                WITH (  
+                    BillDate  DATE,  
+                    LINE  VARCHAR(30),  
+                    ITEMCODE  INT,  
+                    ITEMNAME VARCHAR(30),  
+                    RATE VARCHAR(20),  
+                    PACKING_QTY  VARCHAR(20),  
+                    QTY  INT,  
+                    USERNAME  VARCHAR(30),  
+                    SALESMAN  VARCHAR(30)  
+                )  
+            )  
+            --INSERT INTO  Bell_LS_ORDERS (ITEMCODE,ITEMNAME,RATE,QTY,BILLDATE,AREA,USERNAME,T_B,WEBSYNCED)   
+           --SELECT J.ITEMCODE,J.ITEMNAME,J.RATE,J.AVAILABLE_PAKS,J.BILLDATE,J.LINE,J.USERNAME,J.QTY,'From_Mobile' FROM JsonData J  
+           MERGE BELL_LS_ORDERS AS target  
+            USING JsonData AS source  
+               ON target.AREA = source.LINE  
+               AND target.BillDate = source.BillDate   
+              -- AND target.ITEMNAME = source.ITEMNAME  
+               AND target.ITEMCODE = source.ITEMCODE  
+            WHEN MATCHED THEN  
+                UPDATE SET   
+                    target.T_B = source.QTY, target.QTY=source.PACKING_QTY,WEBSYNCED='VERIFIED',  
+                     target.ITEMNAME = source.ITEMNAME, target.RATE=source.RATE, 
+                    target.USERNAME=source.USERNAME,target.ACTIONDATE = GETDATE()  
+            WHEN NOT MATCHED AND source.QTY > 0 THEN  
+            INSERT (ITEMCODE,ITEMNAME,RATE,QTY,BILLDATE,AREA,USERNAME,T_B,WEBSYNCED)   
+           VALUES(source.ITEMCODE,source.ITEMNAME,source.RATE,source.PACKING_QTY,source.BILLDATE,source.LINE,  
+           source.USERNAME,source.QTY,'VERIFIED');  
+  
+            -- delete all zero QTY items from LS table. -- ADDED ON 10-JUN-26.  
+                DELETE from BELL_LS_ORDERS where T_B=0 AND BILLDATE=@ORDERDATE AND AREA=@LINE  
+        END  
+  
+        ELSE IF @OPERATION = 'ORDERS APPROVED'  -- after Approval from VAN Loading Approver, it should also insert into LS table  
+        BEGIN          
+            --** USING WEBSYNCED TO STORE STATUS AS PENDING/VERIFIED/APPROVED...  
+            ;WITH JsonData AS (  
+                SELECT   
+                BillDate,LINE,ITEMCODE,ITEMNAME,RATE,PACKING_QTY,QTY,'ORDERS' as USERNAME,SALESMAN  
+                FROM OPENJSON(@JsonData) WITH ( BillDate  DATE,LINE  VARCHAR(30),ITEMCODE  INT,ITEMNAME VARCHAR(30),  
+                    RATE VARCHAR(20),PACKING_QTY  VARCHAR(20),QTY  INT,USERNAME  VARCHAR(30),SALESMAN  VARCHAR(30)  )  
+                )  
+            --INSERT INTO  Bell_LS_ORDERS (ITEMCODE,ITEMNAME,RATE,QTY,BILLDATE,AREA,USERNAME,T_B,WEBSYNCED)   
+           --SELECT J.ITEMCODE,J.ITEMNAME,J.RATE,J.AVAILABLE_PAKS,J.BILLDATE,J.LINE,J.USERNAME,J.QTY,'From_Mobile' FROM JsonData J  
+           MERGE BELL_LS_ORDERS AS target  
+            USING JsonData AS source  
+               ON target.AREA = source.LINE AND target.BillDate = source.BillDate   
+               --AND target.ITEMNAME = source.ITEMNAME  
+               AND target.ITEMCODE = source.ITEMCODE   
+               WHEN MATCHED THEN  
+                UPDATE SET   
+                    target.T_B = source.QTY, target.QTY=source.PACKING_QTY,target.USERNAME=source.USERNAME,  
+                     target.ITEMNAME = source.ITEMNAME,  
+                    WEBSYNCED='APPROVED',target.ACTIONDATE = GETDATE()  
+            WHEN NOT MATCHED AND source.QTY > 0 THEN  
+            INSERT (ITEMCODE,ITEMNAME,RATE,QTY,BILLDATE,AREA,USERNAME,T_B,WEBSYNCED)   
+           VALUES(source.ITEMCODE,source.ITEMNAME,source.RATE,source.PACKING_QTY,source.BILLDATE,source.LINE,  
+           source.USERNAME,source.QTY,'APPROVED');  
+  
+           -- TO INSERT/UPDATE INTO BELL_LS TABLE  
+           ;WITH JsonData AS (  
+                SELECT   
+                BillDate,LINE,ITEMCODE,ITEMNAME,RATE,PACKING_QTY,QTY, USERNAME,SALESMAN  
+                FROM OPENJSON(@JsonData) WITH ( BillDate  DATE,LINE  VARCHAR(30),ITEMCODE  INT,ITEMNAME VARCHAR(30),  
+                    RATE VARCHAR(20),PACKING_QTY  VARCHAR(20),QTY  INT,USERNAME  VARCHAR(30),SALESMAN  VARCHAR(30)  )  
+                )  
+            --INSERT INTO  Bell_LS_ORDERS (ITEMCODE,ITEMNAME,RATE,QTY,BILLDATE,AREA,USERNAME,T_B,WEBSYNCED)   
+           --SELECT J.ITEMCODE,J.ITEMNAME,J.RATE,J.AVAILABLE_PAKS,J.BILLDATE,J.LINE,J.USERNAME,J.QTY,'From_Mobile' FROM JsonData J  
+           MERGE BELL_LS AS target  
+            USING JsonData AS source  
+               ON target.AREA = source.LINE   
+               AND target.BillDate = source.BillDate   
+               --AND target.ITEMNAME = source.ITEMNAME  
+               AND target.ITEMCODE = source.ITEMCODE   
+               WHEN MATCHED THEN  
+                UPDATE SET   
+                    target.T_B = source.QTY, target.QTY=source.PACKING_QTY,target.USERNAME=source.USERNAME,target.STATUS='From_Mobile',  
+                     target.ITEMNAME = source.ITEMNAME  
+                    ,target.ACTIONDATE = GETDATE()  
+                    WHEN NOT MATCHED AND source.QTY > 0 THEN  
+               INSERT (ITEMCODE,ITEMNAME,RATE,QTY,BILLDATE,AREA,USERNAME,T_B,STATUS)   
+                   VALUES(source.ITEMCODE,source.ITEMNAME,source.RATE,source.PACKING_QTY,source.BILLDATE,source.LINE,  
+                   source.USERNAME,source.QTY,'From_Mobile');  
+  
+                   -- delete all zero QTY items from LS table. -- ADDED ON 4-JUN-26.  
+                   DELETE from BELL_LS where T_B=0 AND BILLDATE=@ORDERDATE AND AREA=@LINE  
+        END  
+    SELECT 1 AS RESULT;  
+END  
+  GO
+
+--ALTER procedure BELL_UPDATE_LS_RETURN_ITEMS_MOBILE_NEW
+--@BILLDATE as DATE,        
+--@AREA as varchar(30),        
+--@ITEMCODE AS integer,        
+--@ITEMNAME AS VARCHAR(30),        
+----@QTY AS VARCHAR(15),        
+--@RET_PAK AS INTeger,        
+--@DAM_PAK AS integer,        
+--@USERNAME AS VARCHAR(30),        
+--@SALESMAN AS VARCHAR(30)
+--AS                     
+--BEGIN        
+-- set @BILLDATE = CONVERT(varchar(10),@BILLDATE,101)        
+ 
+-- print 'Updating Return items for line=' + @AREA + ' BillDate=' + Cast(@BILLDATE AS VARCHAR(20))
+
+-- UPDATE Bell_LS SET USERNAME=@USERNAME,[STATUS]=@SALESMAN,R_B=@RET_PAK,
+-- ACTIONDATE=GETDATE() WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME AND 
+-- AREA=@AREA AND BILLDATE = @BILLDATE
+ 
+-- /*-- UPDATE STOCK WITH RETURN ITEMS 
+-- UPDATE BELL_ITEMMASTER SET STOCK=STOCK + @RET_PAK, USERNAME=@USERNAME,ACTIONDATE=GETDATE() 
+--    WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME      
+--   */     
+--   SELECT 1 AS RESULT            
+--END 

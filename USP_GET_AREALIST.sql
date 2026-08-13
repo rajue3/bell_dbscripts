@@ -10,7 +10,7 @@ UPDATE Bell_Cust_Master SET ISFORDIRECTSALES='YES',ACTIONDATE=GETDATE() WHERE IS
   
 -- USP_GET_AREALIST_New not using    
     
--- USP_GET_LINE_AREA_SHOP_LIST 'users'    
+USP_GET_LINE_AREA_SHOP_LIST 'users'    
     USP_GET_AREALIST 'LINEAREASHOPS'
  USP_GET_AREALIST 'category'    
  USP_GET_AREALIST 'lines'    
@@ -18,24 +18,33 @@ UPDATE Bell_Cust_Master SET ISFORDIRECTSALES='YES',ACTIONDATE=GETDATE() WHERE IS
  USP_GET_AREALIST 'BHADRACHALAM'    
  USP_GET_AREALIST 'PARKAL'    
  USP_GET_AREALIST 'GAFERGADH'    
+ USP_GET_AREALIST 'LINE_SALESMAN'
 */
 ALTER procedure USP_GET_AREALIST  
 @Type as varchar(20) = null,    
 @FROMDATE AS DATE = null,        
 @TODATE AS DATE = null        
 AS    
-Begin    
-  IF (lower(@Type) = 'LINEAREASHOPS')      
+Begin
+IF (lower(@Type) = 'LINE_SALESMAN')      
  Begin      
-    print 'its Item Categories'      
-    --Select Distinct LINE,AREA,ShopName,SALESMAN,CustomerName,MOBILE,ISFORDIRECTSALES from Bell_Cust_Master WITH (NOLOCK) where Status='Active'      
-  Select Distinct LINE,'' AREA,'' ShopName,ISNULL(SALESMAN,'') SALESMAN,'' CustomerName,'' MOBILE,
-  ISNULL(ISFORDIRECTSALES,'NO') ISFORDIRECTSALES from Bell_Cust_Master WITH (NOLOCK) where Status='Active'    
-  AND ISFORDIRECTSALES<>'YES'  
+       print 'LINE AND SALES MAN LIST'      
+      Select Distinct LINE,MAX(isnull(Salesman, '')) AS Salesman from Bell_Cust_Master WITH (NOLOCK) where Status='Active'  AND ISFORDIRECTSALES<>'YES'  
+      group by Line  order by Line
+  end      
+ ELSE IF (lower(@Type) = 'LINEAREASHOPS')      
+ Begin      
+   -- Select distinct line, salesman from Bell_Cust_Master where isnull(salesman,'')='' and Status='Active' AND ISFORDIRECTSALES<>'YES' 
+    --Select Distinct LINE,AREA,ShopName,SALESMAN,CustomerName,MOBILE,ISFORDIRECTSALES from Bell_Cust_Master WITH (NOLOCK) where Status='Active'  
+    
+  --Select Distinct LINE,'' AREA,'' ShopName,'' SALESMAN,'' CustomerName,'' MOBILE,
+  --ISNULL(ISFORDIRECTSALES,'NO') ISFORDIRECTSALES from Bell_Cust_Master WITH (NOLOCK) where Status='Active'  AND ISFORDIRECTSALES<>'YES'  
+  Select Distinct LINE,'' AREA,'' ShopName,MAX(isnull(Salesman, '')) AS SALESMAN,'' CustomerName,'' MOBILE,
+  ISNULL(ISFORDIRECTSALES,'NO') ISFORDIRECTSALES,ISNULL(IsShopPhotoRequired,'N') AS IsShopPhotoRequired from Bell_Cust_Master WITH (NOLOCK) where Status='Active'  AND ISFORDIRECTSALES<>'YES'  
+  GROUP by Line,ISFORDIRECTSALES,IsShopPhotoRequired
   UNION
-  SELECT LINE,ISNULL(AREA,'') AREA,ISNULL(SHOPNAME,'') SHOPNAME,ISNULL(SALESMAN,'') SALESMAN,CustomerName,ISNULL(MOBILE,'') MOBILE,
-  ISNULL(ISFORDIRECTSALES,'NO') ISFORDIRECTSALES from Bell_Cust_Master WITH (NOLOCK) where 
-  Status='Active' AND ISFORDIRECTSALES='YES'     
+  SELECT LINE,ISNULL(AREA,'') AREA,ISNULL(SHOPNAME,'') SHOPNAME,'' SALESMAN,CustomerName,ISNULL(MOBILE,'') MOBILE,
+  ISNULL(ISFORDIRECTSALES,'NO') ISFORDIRECTSALES,ISNULL(IsShopPhotoRequired,'N') AS IsShopPhotoRequired from Bell_Cust_Master WITH (NOLOCK) where Status='Active' AND ISFORDIRECTSALES='YES'     
   -- AND LINE in ('BAZAR','BHAVANI','GATE','NEZAR','ITEM SALE IN FACTORY')
  end      
  ELSE IF (lower(@Type) = 'users')    

@@ -1,0 +1,138 @@
+use zionwellmark_bellbrand
+go
+select * from BELL_EMP_SALARY_PAYMENT
+select * from BELL_DAILYCASHFLOW_LOG order by actiondate desc
+delete from BELL_DAILYCASHFLOW_LOG 
+select * from Bell_ITEMNAMES
+select * from Bell_Cust_Master order by actiondate desc
+-- EXEC SP_RENAME 'Bell_Cust_Master' ,'Bell_Cust_Master_XX'  --TODO
+
+  SELECT DISTINCT   sp.name AS ProcedureName
+    --, sm.definition AS ProcedureDefinition
+    FROM sys.sql_modules sm INNER JOIN sys.objects sp  ON sm.object_id = sp.object_id WHERE sp.type = 'P'  -- P = SQL Stored Procedure
+  AND sm.definition = 'Bell_REPORT_HEADER_BILLDATE';
+  
+select * from BELL_LineSalesManPayments order by actiondate desc
+select * from BELL_MASTERDATA
+select * from bell_tblCashApproval  order by actiondate desc
+select * from Bell_REPORT_HEADER
+select * from tblLineSalesManPendings
+select * from tblVANCASH_IN_DETAILS
+select * from tblVANCASH_OUT_DETAILS
+select * from BELL_VEHICLE_MASTER
+select * from tblVANSALESBILL_DETAILS
+select * from SALESMAN_MASTER
+select * from MasterData
+select * from Bell_REPORT_HEADER_BILLDATE  --check and drop
+select * from Bell_ItemMaster order by actiondate desc
+select * from Bell_Users
+
+drop table BELL_CATEGORY_MASTER_08Nov25
+drop table BELL_masterdata4Dec25
+drop table Bell_LS_Orders 
+drop table BELL_DAILYCASHFLOW_12NOV25
+drop table bell_category_master_12NOV25
+drop table BELL_DAILYCASHFLOW_25Nov25
+drop table Bell_STOCK_ENTRY --done
+
+drop table Bell_Dummy4Report --done
+drop table Temp_Pivot
+
+drop table tblAdminData --done
+delete from tblAllMasterData  -- * by mistake deleted, it has only one record. need to check and rollback if required.
+drop table Bell_TEMP_REPORT --done
+delete from tblItemMaster
+drop table tblOrders 
+drop table tblOrderItems
+
+--- list of SPs from _bellbrand DB
+BELL_AREA_WISE_ITEM_COUNT
+BELL_DEL_CASH_TRANS_BY_ID
+BELL_GET_ALL_CATEGORIES
+BELL_GET_All_Items
+BELL_GET_CASH_INOUT_CHANGE_LOG
+BELL_GET_CASH_TRANS_BY_DATE
+BELL_GET_CASH_TRANS_BY_DATE_NEW
+Bell_GET_CustomerDetails
+BELL_GET_INACTIVE_SHOPS
+BELL_GET_ItemsByMonth
+BELL_GET_LS_ItemsByArea_Date
+BELL_GET_LS_ItemsByDate
+BELL_GET_LS_ORDER_ITEMS
+BELL_GET_OPERATOR_NAME
+BELL_GET_PENDING_ORDERS
+BELL_GET_SM_ONLINE_TRANSFERS
+BELL_GET_STOCK_IN_OUT_BYITEM
+BELL_GET_STOCK_TRANSACTIONS
+BELL_GET_STOCK_TRANSACTIONS_GROUP_BY_ITEM
+BELL_GET_TOTAL_SALES_BY_AREA
+BELL_GET_TOTAL_SALES_BY_AREA_NEW
+BELL_GET_WEB2LOCAL_BY_DATE
+BELL_INC_UPD_BILL_ITEMS_TEMP
+BELL_INC_UPD_Bills
+BELL_INC_UPD_Bills_NEW
+BELL_INC_UPD_Customers
+BELL_INC_UPD_Customers_New
+BELL_INC_UPD_ITEMS_STOCK
+BELL_INC_UPD_LS_ITEMS
+BELL_INC_UPD_LS_ITEMS_NEW
+BELL_INC_UPD_MASTER_ITEMS
+BELL_INS_UPD_CASH_TRANS
+BELL_INS_UPD_CASH_TRANS_LOCA2WEB
+Bell_SAVE_CustomerLocation
+BELL_SAVE_PENDING_DUES
+BELL_SHOP_WISE_SALES_BY_BILLNUMBER
+BELL_SHOP_WISE_TOTAL_SALES
+BELL_SP_GET_All_Customer_BILL_DETAILS
+BELL_SP_GET_All_LS_Customers
+BELL_SP_GET_All_LS_Items
+BELL_STOCK_DETAILS
+BELL_STOCK_TRANSACTIONS
+BELL_UPD_AREA_BY_LINE_SHOP
+BELL_UPD_ITEMS_PRATE_MINORDER
+BELL_WEEK_WISE_SALES_COUNT_BY_BILLDATE
+GenerateInsertScripts
+GET_SERVICE_DUES
+USP_ADD_UPDATE_CUSTOMER
+USP_DELETE_ITEM
+USP_DELETE_USER
+USP_GET_ALL_OrdersByStatus
+USP_GET_ALL_USERS
+USP_GET_ALLITEMS
+USP_GET_ALLITEMS_BY_CATEGORY
+USP_GET_ALLITEMS_Refresh
+USP_GET_AllItemsById
+USP_GET_AREALIST
+USP_GET_AREALIST_NEW
+USP_GET_CUSTOMER_INFOBY_MOBILE  --zion stuff
+USP_GET_CUSTOMER_OrdersByStatus
+USP_Get_OrderItemsByOrderID  -- zion stuff
+USP_Get_OrdersByMobile
+USP_GetWeekDaysLineCount
+USP_ITEMS_WISE_SALES_COUNT_BY_AREA
+USP_ITEMS_WISE_SALES_COUNT_BY_BILLDATE
+USP_ITEMS_WISE_SALES_COUNT_BY_ITEMNAME
+USP_ITEMS_WISE_SALES_COUNT_BY_ITEMNAME_NEW
+USP_ITEMS_WISE_SALES_COUNT_BY_ITEMNAME_OLD
+USP_ITEMS_WISE_SALES_COUNT_BY_SHOP
+USP_MONTHLY_SALE_ITEMS_COUNT
+USP_SAVE_CustomerLocation
+USP_SAVE_ORDER_DETAILS
+USP_SAVE_ORDER_ITEMDETAILS
+USP_SAVE_USER_DETAILS
+USP_SHOP_WISE_SALES_COUNT_BY_BILLDATE
+USP_SHOP_WISE_SALES_COUNT_BY_BILLDATE_15JAN25
+USP_SHOP_WISE_SALES_COUNT_BY_BILLDATE_26JAN25
+USP_SHOP_WISE_SALES_COUNT_BY_BILLDATE_TESTING
+
+USP_SHOP_WISE_SALES_COUNT_BY_BILLDATE_WORKING
+USP_Update_ItemDetails
+USP_UPDATE_ORDER_DETAILS 
+USP_VALIDATE_USER
+USP_WEEKLY_SALE_ITEMS_COUNT
+USP_WEEKLY_SALES_REPORT
+
+drop procedure ZION_DELETE_CUSTOMER
+drop procedure ZION_GET_ALL_CUSTOMERS
+drop procedure ZION_INS_UPD_CUSTOMER
+drop procedure USP_UpdateMobileAuth  -- zion stuff
