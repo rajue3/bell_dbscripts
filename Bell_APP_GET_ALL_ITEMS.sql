@@ -123,8 +123,9 @@ BEGIN
 
 				-- CHANGED FOR ADDING LINE WISE OFFERS 
 				Select A.ITEMID AS ID, A.ITEMCODE,A.ItemName, A.Itemname as Name,A.MRP,A.PACKINGTYPE,'' as Qty,   
-				--iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Rate1,
-				RATE1,ISNULL(Rate2,RATE1) AS RATE2,
+				--A.Rate1,A.Rate1 as Price,
+				iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Rate1,
+				iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Price,
 				 A.TOTALITEMSINPACK,'' AS TOTALITEMSINCARTON,A.CATEGORY, 1 as CategorID, @ImageURL + replace(ImageUrl,' ','%20') as ImageUrl,A.DiscountPercent,
 				 --DETAILS AS [Description] ,A.OFFERAVAILABLE
 				  IIF( EXISTS(SELECT ITEMNAME FROM BELL_LINE_WISE_OFFERS L WHERE (LINE=@LINE OR LINE='ALL') AND L.ITEMNAME=A.ITEMNAME),'Y','N' ) AS OFFERAVAILABLE
@@ -162,9 +163,9 @@ BEGIN
 			--FROM BELL_ItemMaster Where status='Active' and CATEGORY<>'RAW MATERIALS' 
 			--order by ItemCode
 			Select A.ITEMID as ID, A.ITEMCODE,A.ItemName, A.Itemname as Name,A.MRP,A.PACKINGTYPE,'' as Qty,   
-			RATE1,ISNULL(Rate2,RATE1) AS RATE2,
-			--iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Rate1,
-			--iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Price,
+			--A.Rate1, A.Rate1 as Price,
+			iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Rate1,
+			iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Price,
 			 A.TOTALITEMSINPACK,'' AS TOTALITEMSINCARTON,A.CATEGORY, 1 as CategorID, @ImageURL + replace(ImageUrl,' ','%20') as ImageUrl, 
 			 A.DiscountPercent,isnull(A.OFFERPAKS,0) MINORDERFOROFFER,
 			 --DETAILS AS [Description],A.OFFERAVAILABLE,isnull(A.OFFERITEMNAME,'') OFFERITEMNAME ,
