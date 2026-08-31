@@ -3,18 +3,34 @@ go
 --use bellbrand_dailycash
 --use zionwellmark_bellbrand  -- (hosting home)
 --use zionwellmark_onlineorders -- (hosting home)
+USP_SHOP_WISE_SALES_COUNT_BY_BILLDATE
 go
 select ID,LINE,AREA,SHOPNAME,CUSTOMERNAME,MOBILE,IsForDirectSales,GroupName,Category,ISNULL(AREA_SEQ,0) AREA_SEQ,ISNULL(SHOP_SEQ,0) SHOP_SEQ from Bell_Cust_Master Where Status='Active' and Line='ADILABAD' 
+SELECT CONVERT(VARCHAR(10), GETDATE(), 23) AS FormattedDate;
+delete from BELL_APP_SHOPS_VISIT_INFO where id=30515
+SELECT SHOP_VISIT_PHOTO_NAME,* FROM BELL_APP_SHOPS_VISIT_INFO WHERE SHOP_VISIT_PHOTO_NAME<>''
 
 SELECT * FROM BELL_APP_SHOPS_VISIT_INFO with (nolock) where  line='BAZAR DIRECT SALES' AND orderdate='2026-05-08'
-select * from BELL_CUST_MASTER where IsShopPhotoRequired='Y'
+select * from bhavani_ER_Bills where area='Bazar direct sales'  order by billdate desc
+and billdate='2026-08-01'
+select * from bell_ls where area='' and billdate='2026-08-19' order by itemcode
+select * from bhavani_ER_Bills where area='Korutla'  order by actiondate desc
+select * from BELL_CUST_MASTER where IsShopPhotoRequired='y'
+--update BELL_CUST_MASTER set IsShopPhotoRequired='N' where LINE<>'ADILABAD'
+select * from BELL_CUST_MASTER where line LIKE 'HNK kothur%' AND AREA LIKE 'koth%'
+--UPDATE BELL_CUST_MASTER SET line='HNK KOTHUR JENDA (HNK) DIRECT SALES' where line LIKE 'HNK KOTHUR JENDA DIRECT SALES%' 
+BELL_UPSERT_MOBILE_SHOP_VISITING_INFO_JSON
+--update BELL_CUST_MASTER set IsShopPhotoRequired='Y' where LINE='HANAMKONDA DIRECT SALES' --IsShopPhotoRequired is null
+SELECT DISTINCT LINE,SALESMAN,STATUS,IsForDirectSales,IsShopPhotoRequired from BELL_CUST_MASTER WHERE 1=1  AND STATUS=STATUS  ORDER BY LINE 
+
 --update BELL_CUST_MASTER set ISSHOPPHOTOREQUIRED='Y' where Line='GATE' 
 --alter TABLE BELL_APP_SHOPS_VISIT_INFO add SHOP_VISIT_PHOTO_NAME VARCHAR(100)
 
 --SELECT TRANSLATE(testString, ': ', '__') FROM your_table;
 --System.Text.RegularExpressions.Regex.Replace(testString, @"[:\s]", "_")
 
-select * from BELL_CUST_MASTER where LINE LIKE 'BAZAR DIRECT SALES%'
+select * from BELL_CUST_MASTER where LINE LIKE '% DIRECT SALES%'
+
 select * from BELL_CUST_MASTER where line LIKE 'PEDDAPALLY%'  
 select * from BELL_CUST_MASTER where line ='SULTHANABAD'  AND AREA='BHOJANNAPET'
 --update BELL_CUST_MASTER set ACTIONDATE=GETDATE(),AREA_SEQ=7,AREA='PEDDAPALLY' WHERE  line ='SULTHANABAD'  AND AREA='SULTHANABAD'
@@ -22,8 +38,24 @@ select * from BELL_CUST_MASTER where line ='SULTHANABAD'  AND AREA='BHOJANNAPET'
 --update BELL_CUST_MASTER set ACTIONDATE=GETDATE(),LINE='PEDDAPALLY',AREA='SULTHANABAD' WHERE  line ='SULTHANABAD' AND AREA_SEQ=7
 --update BELL_CUST_MASTER set ACTIONDATE=GETDATE(),LINE='PEDDAPALLY',AREA='BHOJANNAPET' WHERE  line ='SULTHANABAD'  AND AREA_SEQ=8
 
-select * from BELL_CUST_MASTER where area like '%jul%'
+select * from BELL_CUST_MASTER where LINE like '%HNK %'
 select * from BELL_CUST_MASTER where Line='Bazar direct sales' order by actiondate desc
+select * from BELL_CUST_MASTER where LINE='WARANGAL DIRECT SALES'
+ALTER TABLE BELL_CUST_MASTER ALTER COLUMN AREA VARCHAR(50)
+update BELL_CUST_MASTER  set LINE='WARANGAL DIRECT SALES',ACTIONDATE=GETDATE() WHERE Line='Bazar direct sales' AND AREA IN 
+('LABOUR COLONY','FORT ROAD','AUTONAGAR','BAZAR','DESHAIPET','AUTONAGAR','PAIDIPALLY','ENAMAMULA MARKET')
+INSERT INTO BELL_CUST_MASTER (CUSTID,AREA,SHOPNAME,CUSTOMERNAME,MOBILE,SALESMAN,ACTIONDATE,STATUS,LINE,USERNAME,ISFORDIRECTSALES,
+GROUPNAME,CATEGORY,AREA_SEQ,SHOP_SEQ,ISSHOPPHOTOREQUIRED) VALUES(-1,'KAZIPET','KAZIPET','','121212','TEST',GETDATE(),'Active','KAZIPET DIRECT SALES','ADMIN','LOCAL',
+'KIRANAM','KIRANAM',1,1,'Y')
+
+INSERT INTO BELL_CUST_MASTER (CUSTID,LINE,AREA,SHOPNAME,CUSTOMERNAME,MOBILE,ACTIONDATE,STATUS,USERNAME,ISFORDIRECTSALES,
+GROUPNAME,CATEGORY,ISSHOPPHOTOREQUIRED,AREA_SEQ,SHOP_SEQ) 
+
+INSERT INTO BELL_CUST_MASTER (CUSTID,LINE,AREA,SHOPNAME,CUSTOMERNAME,MOBILE,ACTIONDATE,STATUS,USERNAME,ISFORDIRECTSALES, GROUPNAME,CATEGORY,ISSHOPPHOTOREQUIRED,AREA_SEQ,SHOP_SEQ) VALUES(-1,'HNK SUBEDARI DIRECT SALES','NANDINI HILLS','','','',GETDATE(),'ACTIVE','ADMIN','LOCAL','KIRANAM','KIRANAM','N',11)
+INSERT INTO BELL_CUST_MASTER (CUSTID,LINE,AREA,SHOPNAME,CUSTOMERNAME,MOBILE,ACTIONDATE,STATUS,USERNAME,ISFORDIRECTSALES, GROUPNAME,CATEGORY,ISSHOPPHOTOREQUIRED,AREA_SEQ,SHOP_SEQ) VALUES(-1,'HNK SUBEDARI DIRECT SALES','TELANGANA CIRCLE','AKSHITHA K/M','','7095018795',GETDATE(),'ACTIVE','ADMIN','LOCAL','KIRANAM','KIRANAM','N',22)
+INSERT INTO BELL_CUST_MASTER (CUSTID,LINE,AREA,SHOPNAME,CUSTOMERNAME,MOBILE,ACTIONDATE,STATUS,USERNAME,ISFORDIRECTSALES, GROUPNAME,CATEGORY,ISSHOPPHOTOREQUIRED,AREA_SEQ,SHOP_SEQ) VALUES(-1,'HNK SUBEDARI DIRECT SALES','TELANGANA CIRCLE','RUDRAKSHI K/M','','9701592893',GETDATE(),'ACTIVE','ADMIN','LOCAL','KIRANAM','KIRANAM','N',23)
+
+
 --update BELL_CUST_MASTER set AREA='BAZAR' WHERE AREA LIKE '0%'
 --delete from BELL_CUST_MASTER where Status='DELETED'
 --delete from BELL_CUST_MASTER where Status='DELETE_DUPLICATE'
@@ -36,7 +68,7 @@ select * from BELL_CUST_MASTER where Line='Bazar direct sales' order by actionda
 select * from bhavani_ER_Bills where area='BHADRACHALAM' AND BILLDATE='2026-08-06' order by actiondate desc
 
 
-select * from bhavani_ER_Bills where area='BHAVANI' order by actiondate desc
+select * from bhavani_ER_Bills where area='adilabad' order by actiondate desc
 select * from bhavani_ER_Bills where area='GATE' AND BILLDATE='2026-08-03' order by actiondate desc
 select * from bhavani_ER_Bills where area='NEZAR' AND BILLDATE='2026-08-03' order by actiondate desc
 
@@ -50,10 +82,18 @@ ITEMNAME IN ('50GM KHARA BAG','ROSE WAFFER 5RS','NICE COVA PKT','NICE COVA JAR',
 
 SELECT * FROM BELL_ITEMMASTER WHERE ITEMcode=2013
 --update BELL_ITEMMASTER set itemname='SOANPAPIDI 5RS',Status='Active',actiondate=getdate(),rate1=175,rate2=175,totalitemsinpack=8,mrp=250,prate=200 where itemid=844
-SELECT * FROM BELL_ITEMMASTER WHERE ITEMNAME like '%soanp%'
---SELECT * into BELL_ITEMMASTER_27Jul FROM BELL_ITEMMASTER
-SELECT * FROM bazar_ITEMMASTER WHERE ITEMNAME like '%milk%'
+SELECT * FROM BELL_ITEMMASTER WHERE category <> 'RAW MATERIALS' and imageurl not like '%.jpg'
+-- Done : same replace should be done in VB code while adding any new item, add imageUrl
+--* update BELL_ITEMMASTER set Imageurl = REPLACE(REPLACE(REPLACE(ITEMNAME, '/', ''), '\', ''),'-','') + '.jpg' where isnull(ImageUrl,'') = '' and category <> 'RAW MATERIALS'
+--update BELL_ITEMMASTER set Imageurl = REPLACE(REPLACE(REPLACE(ITEMNAME, '/', ''), '\', ''),'-','') + '.jpg' where category <> 'RAW MATERIALS' and imageurl not like '%.jpg'
+--select * into BELL_ITEMMASTER_25Aug26 from BELL_ITEMMASTER 
 
+--SELECT ITEMID, TRANSLATE(itemname, '/-', '  ') FROM BELL_ITEMMASTER  ORDER BY ITEMID
+SELECT ITEMID,REPLACE(REPLACE(REPLACE(ITEMNAME, '/', ''), '\', ''),'-','') FROM BELL_ITEMMASTER
+
+--SELECT * into BELL_ITEMMASTER_27Jul FROM BELL_ITEMMASTER
+SELECT * FROM Bell_ITEMMASTER WHERE ITEMNAME like '%cheko%'
+180 GMS SOAP 10/-
 SELECT * FROM BELL_ITEMMASTER WHERE rate1 is null
 Bell_APP_GET_ALL_ITEMS_TEST '2026-07-13','SIDDIPET', 'ALL_ITEM_ORDERS_SHOPS'
 Bell_APP_GET_ALL_ITEMS_TEST '2026-06-12','BHUPALPALLY', 'ALL_ITEM_ORDERS_SHOPS'
@@ -61,6 +101,8 @@ Bell_APP_GET_ALL_ITEMS_TEST '2026-06-12','BHUPALPALLY', 'ALL_ITEM_ORDERS_SHOPS'
 BELL_UPD_ITEMS_SEQUENCE_JSON
 BELL_INC_UPD_MASTER_ITEMS
 BELL_STOCK_DETAILS
+
+BELL_GET_ALL_BAZAR_ITEMS_BY_SHOPNAME
 
 select * from bhavani_ER_Bills WITH (NOLOCK) where area='BAZAR' and billdate='2026-08-01' order by billnumber DESC
 select billnumber,sum(amount) from bhavani_ER_Bills WITH (NOLOCK) where area='venkatapuram' and billdate='2026-07-17' 
@@ -109,21 +151,19 @@ select * FROM BELL_ITEMMASTER WHERE  itemname  like 'round c%'
 --delete from BELL_ITEMMASTER where itemid=2999
 select * FROM BELL_ITEMMASTER WHERE  item_seq =0
 
-select * FROM BELL_ITEMMASTER WHERE  status<>'Active' 
+select * FROM BELL_ITEMMASTER  ORDER BY itemcode WHERE  status<>'Active' 
 --delete FROM BELL_ITEMMASTER WHERE  status<>'Active' and itemcode is null
-select * from Bell_LS_ORDERS WHERE BILLDATE='2026-07-27' AND AREA='KAMAREDDY' ORDER BY ITEMNAME
-select * from Bell_LS WHERE  BILLDATE='2026-07-27'  AND AREA='KAMAREDDY' ORDER BY ITEMNAME
+
+select * from Bell_LS_ORDERS WHERE AREA='jammikunta' and  BILLDATE='2026-09-01'  ORDER BY itemcode
+select * from Bell_LS WHERE  BILLDATE='2026-08-18'  AND AREA='bellampally' 
+--DELETE FROM Bell_LS WHERE  BILLDATE='2026-08-18'  AND AREA='bellampally' and username='ORDERS'
+
 select * from Bell_LS WHERE  USERNAME='ORDERS' ORDER BY BILLDATE DESC
 --delete from Bell_LS WHERE  BILLDATE='2026-07-27'  AND AREA='KAMAREDDY' and itemname='SALTINO 5RS'
 
-SALTINO 5RS
-TAMATO KETCHUP 1RS
-CAKE TIME 5RS
-TWERK 5RS
-
 --update BELL_ITEMMASTER  set Rate1=135,rate2=135 where itemid=2998
 
-select * from BAZAR_ItemMaster where SHOPNAME='BHAVANI' AND STATUS='Active' 
+select * from BAZAR_ItemMaster where SHOPNAME='BHAVANI' AND STATUS='Active'  ORDER BY ITEMCODE
 select * from BAZAR_ItemMaster where SHOPNAME='BHAVANI' and itemname like '%cova%'
 update BAZAR_ItemMaster set ItemName='5RS Pala Cova',PACKINGTYPE='BOX',username='ADMIN',TotalItemsInPack=12,stock=312,
 RATE1=3.5,RATE2=4,RATE3=5,stock_available=312,sTATUS='Active' where SHOPNAME='BHAVANI' and itemid=3107
@@ -418,7 +458,7 @@ update Bell_Cust_Master set AREA_SEQ=1, SHOP_SEQ=1,ACTIONDATE=GETDATE() WHERE LI
 
 ----
 SELECT distinct line FROM Bell_Cust_Master order by LINE
-SELECT * FROM Bell_Cust_Master WHERE STATUS='Active' and LINE='Asifabad' order by area_seq,area,shop_seq
+SELECT * FROM Bell_Cust_Master WHERE STATUS='Active' and LINE like 'HANAMKONDA%' order by area_seq,area,shop_seq
 --delete FROM Bell_Cust_Master WHERE STATUS='Active' and LINE='Asifabad' and mobile='8008013207'
 select * FROM Bell_Cust_Master WHERE STATUS='Active' and LINE='Asifabad' and mobile='8008013207'
 
@@ -779,6 +819,8 @@ USP_VALIDATE_USER
 USP_SAVE_USER_DETAILS
 USP_GET_ALL_USERS
  SELECT * FROM BELL_USERS WHERE USERTYPE IN ('OFFICE','VAN LOADING','VAN LOADING APPROVER')
+ update BELL_USERS  set usertype='DIRECT BILLING',username='bellbrand',password='bellbrand' where id=17
+
  --UPDATE BELL_USERS SET firstname='BellBrand',lastname='Bhavani', USERNAME='bellbrand',password='BellBrand',ActionDate=getdate() where id=3
  --UPDATE BELL_USERS SET password='654321',ActionDate=getdate() where id=7
  

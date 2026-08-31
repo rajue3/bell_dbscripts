@@ -99,7 +99,7 @@ BEGIN
   
     SET @JsonData = REPLACE(@JsonData,'\','')  
   
-    -- MODIFIED 'LS' CODE ON 12-JUL-26  
+    -- MODIFIED 'LS' CODE ON 31-AUG-26  TO ADD R_B IN UPDATE 
     IF @OPERATION = 'LS'  
     BEGIN  
             -- Parse JSON into a table variable  
@@ -142,7 +142,7 @@ BEGIN
                AND target.ITEMCODE = source.ITEMCODE  
             WHEN MATCHED THEN  
                 UPDATE SET   
-                    target.T_B = source.T_B, target.QTY=source.QTY,STATUS='VERIFIED',  
+                    target.T_B = source.T_B,target.R_B = source.R_B, target.QTY=source.QTY,STATUS='VERIFIED',  
                     target.ITEMNAME = source.ITEMNAME, target.RATE=source.RATE, 
                     target.USERNAME=source.USERNAME,target.ACTIONDATE = GETDATE()  
             WHEN NOT MATCHED AND source.T_B > 0 THEN  

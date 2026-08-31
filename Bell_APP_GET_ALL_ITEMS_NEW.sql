@@ -1,18 +1,8 @@
 /*
-USP_GET_AllItemsById
-USP_Update_ItemDetails
 
-select * from Bell_ItemMaster where status='InActive'  order by actiondate desc
-select Replace(ImageUrl,' ','_'),* from Bell_ItemMaster where status='Active' and Category<> 'Raw materials' order by actiondate desc
---to remove space char from all image file names
-update Bell_ItemMaster set ImageUrl=Replace(ImageUrl,' ','_')
-
-select distinct category from Bell_ItemMaster 
---select * from Bell_ItemMaster where imageurl like '%/%' 
 --update Bell_ItemMaster set ImageURL = replace(imageurl,'/','') where imageurl like '%/%' 
 --update Bell_ItemMaster set ImageURL = trim(ItemName)+'.jpg' where status='Active' and Category<> 'Raw materials' AND ITEMCODE<6
 
-select * from tblAllMasterData
 --update tblAllMasterData set FIELDVALUE='https://myorders.zionwellmark.in/Bell_Images/' where fieldtype='Bell_ImageServerURL'
 update tblAllMasterData set FIELDVALUE='https://bellbrandbhavanikhara.in/bell_item_images/' where fieldtype='Bell_ImageServerURL'
 --INSERT INTO tblAllMasterData(FIELDTYPE, FIELDVALUE,Description) VALUES('Bell_ImageServerURL','https://myorders.zionwellmark.in/Bell_Image/','for Bell Brand')
@@ -20,60 +10,28 @@ update tblAllMasterData set FIELDVALUE='https://bellbrandbhavanikhara.in/bell_it
 select * from Bell_ItemMaster where BILLDATE = '2026-05-08' and area='Siricilla'
 select * FROM BELL_ItemMaster A with (nolock) 
 
-			 and B.BILLDATE=@ORDERDATE and B.AREA=@LINE Where A.status='Active' and A.CATEGORY<>'RAW MATERIALS' 
+ Bell_APP_GET_ALL_ITEMS_NEW '2026-05-18','MARIPEDA', 'FORMOBILE_LOADING'
+ Bell_APP_GET_ALL_ITEMS_NEW '2026-06-01','HANAMKONDA', 'FORMOBILE_LOADING'
+ Bell_APP_GET_ALL_ITEMS_NEW '2026-06-07','HANAMKONDA', 'FORMOBILE_LOADING'
+ Bell_APP_GET_ALL_ITEMS_NEW '2026-06-04','MULUGU', 'FORMOBILE_LOADING'
 
---ALTER TABLE Bell_ItemMaster MODIFY COL DETAILS
-ALTER TABLE Bell_ItemMaster ADD DETAILS NVARCHAR(250) NULL
-ALTER TABLE Bell_ItemMaster ADD ImageUrl NVARCHAR(200) NULL
+ Bell_APP_GET_ALL_ITEMS_NEW '2026-07-17','GAJWEL', 'ALL_ITEM_ORDERS_SHOPS'
+ Bell_APP_GET_ALL_ITEMS_NEW '2026-07-17','GAJWEL', 'ALL_ITEM_ORDERS_SHOPS'
+ Bell_APP_GET_ALL_ITEMS_NEW '2026-06-04','HANAMKONDA', 'ALL_ITEM_ORDERS_SHOPS'
+ Bell_APP_GET_ALL_ITEMS_NEW '2026-06-09','KOTHAGUDEM', 'ALL_ITEM_ORDERS_SHOPS'
+ Bell_APP_GET_ALL_ITEMS_NEW '2026-07-27','KAMAREDDY', 'ALL_ITEM_ORDERS_SHOPS'
+ Bell_APP_GET_ALL_ITEMS_NEW '2026-07-27','KAMAREDDY', 'FORMOBILE_ALL'
+Bell_APP_GET_ALL_ITEMS_NEW '2026-07-30','KHAMMAM', 'ALL_ITEM_ORDERS_SHOPS'
 
-   Bell_APP_GET_ALL_ITEMS '2026-04-30','KORUTLA','BILLS_SHOPS_COUNT'
-   Bell_APP_GET_ALL_ITEMS '2026-07-18','BHAVANI','BAZAR_BILLS_COUNT'
+Bell_APP_GET_ALL_ITEMS_NEW '2026-08-10','BAZAR DIRECT SALES', 'ALL_ITEM_ORDERS_SHOPS'
+Bell_APP_GET_ALL_ITEMS_NEW '2028-07-27','BAZAR', 'ALL_ITEM_ORDERS_SHOPS'
+Bell_APP_GET_ALL_ITEMS_NEW '2026-08-10','BAZAR', 'ALL_ITEM_ORDERS_SHOPS'
 
-
- select * from Bell_LS where area='Asifabad' and username='ORDERS' AND BILLDATE <= '2026-02-28'
-select * from Bell_LS where  BILLDATE = '2026-05-08' and area='Siricilla'
-
-select * from BELL_ItemMaster where Itemname in (select Itemname from Bell_LS where  BILLDATE = '2026-05-08' and area='Siricilla')
-select * from BELL_ItemMaster where Itemname in (select Itemname from Bell_LS where  BILLDATE = '2026-05-09' and area='Yellandu')
-select * from Bell_LS_ORDERS where  BILLDATE = '2026-05-08' and area='Siricilla'
-129	BOURBUN 10RS
-127	50-50 10RS
-130	LITTILE HEARTS 5RS
-97	JUMBO MYSOREPAK JAR 5RS
-362	DETERGENT 3KG
-68	KRUPA PAPIDI(BANARAS)
-
-ALTER TABLE BELL_LS ADD STATUS VARCHAR(10) DEFAULT ''
--- STATUS CAN BE 'LOADED', 'PENDING' 'COMPLETED'
--- Bell_APP_GET_ALL_ITEMS '2026-03-31','Maripeda', 'UPDATE_DISCOUNT'
-
- Bell_APP_GET_ALL_ITEMS '2026-06-01','HANAMKONDA', 'FORMOBILE_ALL'
-
--- Bell_APP_GET_ALL_ITEMS '2026-05-11','PALAKURTHY', 'FORMOBILE_ALL'
-
-Bell_APP_GET_ALL_ITEMS '2026-07-03','NEKKONDA', 'FORMOBILE_ALL'
--- Bell_APP_GET_ALL_ITEMS '2026-03-31','Jangaon', 'FORMOBILE_ALL'
--- Bell_APP_GET_ALL_ITEMS '2026-03-26','NARSAMPET', 'FORMOBILE_ALL'
--- Bell_APP_GET_ALL_ITEMS '2025-12-17','BAYYARAM', 'FORMOBILE_ALL'
- Bell_APP_GET_ALL_ITEMS '2026-05-18','MARIPEDA', 'FORMOBILE_LOADING'
- Bell_APP_GET_ALL_ITEMS '2026-06-01','HANAMKONDA', 'FORMOBILE_LOADING'
- Bell_APP_GET_ALL_ITEMS '2026-06-07','HANAMKONDA', 'FORMOBILE_LOADING'
- Bell_APP_GET_ALL_ITEMS '2026-06-04','MULUGU', 'FORMOBILE_LOADING'
-
- Bell_APP_GET_ALL_ITEMS '2026-07-17','GAJWEL', 'ALL_ITEM_ORDERS_SHOPS'
- Bell_APP_GET_ALL_ITEMS '2026-07-17','GAJWEL', 'ALL_ITEM_ORDERS_SHOPS'
- Bell_APP_GET_ALL_ITEMS '2026-06-04','HANAMKONDA', 'ALL_ITEM_ORDERS_SHOPS'
- Bell_APP_GET_ALL_ITEMS '2026-06-09','KOTHAGUDEM', 'ALL_ITEM_ORDERS_SHOPS'
- Bell_APP_GET_ALL_ITEMS '2026-07-27','BAZAR DIRECT SALES', 'ALL_ITEM_ORDERS_SHOPS'
- Bell_APP_GET_ALL_ITEMS '2026-07-27','KAMAREDDY', 'ALL_ITEM_ORDERS_SHOPS'
- Bell_APP_GET_ALL_ITEMS '2026-07-27','KAMAREDDY', 'FORMOBILE_ALL'
-Bell_APP_GET_ALL_ITEMS '2026-07-30','KHAMMAM', 'ALL_ITEM_ORDERS_SHOPS'
-
- Bell_APP_GET_ALL_ITEMS '2028-07-27','BHAVANI', 'ALL_ITEM_ORDERS_SHOPS'
- Bell_APP_GET_ALL_ITEMS '2026-08-15','BAZAR', 'ALL_ITEM_ORDERS_SHOPS'
-
+Bell_Get_Previous4_Orders_New
+ 
 */
-ALTER Procedure Bell_APP_GET_ALL_ITEMS
+
+alter Procedure dbo.Bell_APP_GET_ALL_ITEMS_NEW
 @ORDERDATE DATE,
 @LINE varchar(50) ,
 @OPTION as varchar(50)  =''
@@ -98,7 +56,7 @@ BEGIN
   BEGIN
 		PRINT 'SHOWING ALL ITEMS FOR WEB APP'
 	 --working script:  
-	 Select ITEMID as ID, ITEMCODE,ItemName, Itemname as Name,MRP,Rate1, Rate1 as Price,PACKINGTYPE,'' as Qty,   
+	 Select ITEMID as ID, ITEMCODE,ItemName, Itemname as Name,MRP,Rate1, Rate2,PACKINGTYPE,'' as Qty,   
 	 TOTALITEMSINPACK,'' AS TOTALITEMSINCARTON,CATEGORY, 1 as CategorID, @ImageURL + replace(ImageUrl,' ','%20') as ImageUrl, DETAILS AS [Description] ,
 	 trim(@ImageURL + replace(ImageUrl,' ','%20' )+ @RND) as ImageUrlNew,ImageUrl as ImageName,ITEM_SEQ
 	 FROM BELL_ItemMaster with (nolock)
@@ -109,7 +67,6 @@ BEGIN
   BEGIN
 			PRINT 'ALL_ITEM_ORDERS_SHOPS FOR MOBILE APP'
 			PRINT 'IsForDirectSales = ' + @IsForDirectSales
-			
 			--CHECK IF ORDER ITEMS EXISTS IN Bell_LS TABLE, ELSE NO NEED TO FETCH OTHER DETAILS.
 			IF EXISTS(SELECT ITEMCODE  FROM Bell_LS with (nolock) WHERE BILLDATE=@ORDERDATE and AREA=@LINE AND T_B > 0) OR (UPPER(@IsForDirectSales) = 'YES')
 			BEGIN
@@ -127,9 +84,8 @@ BEGIN
 
 				-- CHANGED FOR ADDING LINE WISE OFFERS 
 				Select A.ITEMID AS ID, A.ITEMCODE,A.ItemName, A.Itemname as Name,A.MRP,A.PACKINGTYPE,'' as Qty,   
-				--A.Rate1,A.Rate1 as Price,
-				iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Rate1,
-				iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Price,
+				--iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Rate1,
+				 RATE1, ISNULL(Rate2,RATE1) AS RATE2,		--iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Price,
 				 A.TOTALITEMSINPACK,'' AS TOTALITEMSINCARTON,A.CATEGORY, 1 as CategorID, @ImageURL + replace(ImageUrl,' ','%20') as ImageUrl,A.DiscountPercent,
 				 --DETAILS AS [Description] ,A.OFFERAVAILABLE
 				  IIF( EXISTS(SELECT ITEMNAME FROM BELL_LINE_WISE_OFFERS L WHERE (LINE=@LINE OR LINE='ALL') AND L.ITEMNAME=A.ITEMNAME),'Y','N' ) AS OFFERAVAILABLE
@@ -166,10 +122,10 @@ BEGIN
 			--trim(@ImageURL + replace(ImageUrl,' ','%20' )+ @RND) as ImageUrlNew,ImageUrl as ImageName
 			--FROM BELL_ItemMaster Where status='Active' and CATEGORY<>'RAW MATERIALS' 
 			--order by ItemCode
-			Select A.ITEMID as ID, A.ITEMCODE,A.ItemName, A.Itemname as Name,A.MRP,A.PACKINGTYPE,'' as Qty,   
-			--A.Rate1, A.Rate1 as Price,
-			iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Rate1,
-			iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Price,
+			Select A.ITEMID as ID, A.ITEMCODE,A.ItemName, A.Itemname as Name,A.MRP,A.PACKINGTYPE,'' as Qty,   			
+			--iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Rate1
+			 RATE1,ISNULL(Rate2,RATE1) AS RATE2,
+			--iif(@IsForDirectSales = 'LOCAL',A.RATE2,A.RATE1) AS Price,
 			 A.TOTALITEMSINPACK,'' AS TOTALITEMSINCARTON,A.CATEGORY, 1 as CategorID, @ImageURL + replace(ImageUrl,' ','%20') as ImageUrl, 
 			 A.DiscountPercent,isnull(A.OFFERPAKS,0) MINORDERFOROFFER,
 			 --DETAILS AS [Description],A.OFFERAVAILABLE,isnull(A.OFFERITEMNAME,'') OFFERITEMNAME ,
@@ -189,9 +145,9 @@ BEGIN
   BEGIN
 	--isnull(B.ID,0) as ID
 			Select isnull(A.ITEM_SEQ,0) as ID , A.ITEMCODE,A.ItemName, A.Itemname as Name,A.MRP,A.PACKINGTYPE,'' as Qty,   
-			--A.Rate1, A.Rate1 as Price,
-			iif(@IsForDirectSales  = 'LOCAL',A.RATE2,A.RATE1) AS Rate1,
-			iif(@IsForDirectSales  = 'LOCAL',A.RATE2,A.RATE1) AS Price,
+			--iif(@IsForDirectSales  = 'LOCAL',A.RATE2,A.RATE1) AS Rate1
+			RATE1,ISNULL(Rate2,RATE1) AS RATE2,
+			--iif(@IsForDirectSales  = 'LOCAL',A.RATE2,A.RATE1) AS Price,
 			 A.TOTALITEMSINPACK,'' AS TOTALITEMSINCARTON,A.CATEGORY, 1 as CategorID, @ImageURL + replace(ImageUrl,' ','%20') as ImageUrl, 
 			 DETAILS AS [Description],A.DiscountPercent,A.OFFERAVAILABLE,isnull(A.OFFERPAKS,0) MINORDERFOROFFER,
 			 --isnull(A.OFFERITEMNAME,'') OFFERITEMNAME 
@@ -206,7 +162,7 @@ BEGIN
   ELSE IF @OPTION='ONLY_ORDERS' --SHOW ONLY ORDER ITEMS THAT HAVE AVAILABLE PAK>0
   BEGIN
 		PRINT 'SHOWING ONLY ORDERED ITEMS FOR MOBILE APP'
-			Select A.ITEM_SEQ as ID, A.ITEMCODE,A.ItemName, A.Itemname as Name,A.MRP,A.Rate1, A.Rate1 as Price,A.PACKINGTYPE,'' as Qty,   
+			Select A.ITEM_SEQ as ID, A.ITEMCODE,A.ItemName, A.Itemname as Name,A.MRP,A.Rate1, A.Rate2,A.PACKINGTYPE,'' as Qty,   
 			 A.TOTALITEMSINPACK,'' AS TOTALITEMSINCARTON,A.CATEGORY, 1 as CategorID, @ImageURL + replace(ImageUrl,' ','%20') as ImageUrl, 
 			 DETAILS AS [Description] ,A.DiscountPercent,
 			 A.OFFERAVAILABLE,isnull(A.OFFERITEMNAME,'') OFFERITEMNAME ,isnull(A.OFFERPAKS,0) MINORDERFOROFFER,
@@ -220,7 +176,7 @@ BEGIN
   ELSE IF @OPTION='FORMOBILE_MODIFIED' --SHOW ONLY MODIFIED ITEMS : TODO: TO BE IMPLEMENTED
   BEGIN
 		PRINT 'SHOWING ONLY MODIFIED ITEMS FOR MOBILE APP'
-  	 Select ITEM_SEQ as ID, ITEMCODE,ItemName, Itemname as Name,MRP,Rate1, Rate1 as Price,PACKINGTYPE,'' as Qty,   
+  	 Select ITEM_SEQ as ID, ITEMCODE,ItemName, Itemname as Name,MRP,Rate1, Rate2,PACKINGTYPE,'' as Qty,   
 	 TOTALITEMSINPACK,'' AS TOTALITEMSINCARTON,CATEGORY, 1 as CategorID, @ImageURL + replace(ImageUrl,' ','%20') as ImageUrl, DETAILS AS [Description] ,
 	 trim(@ImageURL + replace(ImageUrl,' ','%20' )+ @RND) as ImageUrlNew,ImageUrl as ImageName,ITEM_SEQ
 	 FROM BELL_ItemMaster with (nolock) Where status='Active' and CATEGORY<>'RAW MATERIALS'  AND ISMODIFIED='Y'
