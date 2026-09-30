@@ -113,8 +113,9 @@ BEGIN
  declare @PrevDate as date    
  set @PrevDate = CONVERT(date,dateadd(day,-1,@BILLDATE),101)      
  --SELECT DATENAME(weekday, CAST('2025-04-08' AS DATE)) AS Weekday;    
- if  DATENAME(weekday, CAST(@PrevDate AS DATE)) = 'Sunday'   set @PrevDate = CONVERT(date,dateadd(day,-2,@BILLDATE),101)         
-		if (select count(1) from bell_tblCashApproval where CONVERT(date,TransDate,101) = CONVERT(date,@PrevDate,101)  ) > 0     
+	 if  DATENAME(weekday, CAST(@PrevDate AS DATE)) = 'Sunday'   set @PrevDate = CONVERT(date,dateadd(day,-2,@BILLDATE),101)         
+
+	 if (select count(1) from bell_tblCashApproval where CONVERT(date,TransDate,101) = CONVERT(date,@PrevDate,101)  ) > 0     
 	 begin    
 	   print 'data retrieved from bell_tblCashApproval '    
 	   -- previous day cashinhand will become open balance for next day    
@@ -132,6 +133,9 @@ BEGIN
 	   set @OpenBal = @InitialOB+@CashIN - (select sum(amount) from BELL_DAILYCASHFLOW where UPPER(ISNULL(PAYMENT_MODE,'CASH')) ='CASH' AND upper(TRANSTYPE)='OUT' and     
 	   CONVERT(date,PAIDDATE,101) < CONVERT(date,@BILLDATE,101) GROUP BY TRANSTYPE )    
 	   select @OpenBal as OpenBal,@InitialOB as InitialOB,@CashIN as CashIN    
+	   
+	   --TODo: need to test this, if no data found with prev date then better to get last transdate values (19-Sep-26)
+       --select top(1) TotCashInHand as OpenBal,TRANSDATE from bell_tblCashApproval order by Transdate desc
 	 end       
  END      
 ELSE IF @TRANSTYPE='LINES'

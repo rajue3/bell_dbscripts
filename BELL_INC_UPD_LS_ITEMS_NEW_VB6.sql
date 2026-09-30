@@ -20,15 +20,15 @@ select CONVERT(varchar(10),'2025-12-02',101)
   */
 ALTER procedure BELL_INC_UPD_LS_ITEMS_NEW      
 @BILLDATE as DATE,      
-@AREA as varchar(30),      
+@AREA as varchar(50),      
 @ITEMCODE AS integer,      
-@ITEMNAME AS VARCHAR(30),      
+@ITEMNAME AS VARCHAR(50),      
 @PRICE AS VARCHAR(10),      
 @QTY AS VARCHAR(10),      
 @T_B AS integer,      
 @R_B AS INTeger,      
 @D_B AS integer,      
-@USERNAME AS VARCHAR(30),      
+@USERNAME AS VARCHAR(50),      
 @result int OUTPUT      
       
 AS                   

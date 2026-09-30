@@ -1,4 +1,7 @@
-/*  
+/*
+
+used in SP: USP_SHOP_WISE_SALES_COUNT_BY_BILLDATE
+
 0001-01-01 00:00:00.0000000  
 2026-04-27 16:25:07.0000000  
 SELECT dbo.GetTimeDiff('2026-04-27 12:26:00', '2026-04-27 15:56:30','BILLED') AS TimeDifference;  
@@ -38,11 +41,26 @@ BEGIN
     DECLARE @hours INT = @diffSeconds / 3600;  
     DECLARE @minutes INT = (@diffSeconds % 3600) / 60;  
     DECLARE @seconds INT = @diffSeconds % 60;  
-  
-      RETURN ISNULL(CONCAT('Started: ',FORMAT(CAST(@date1 as DateTime),'hh:mm:ss'), '<br/>',  
+    Declare @ImageFullPath as varchar(300);
+  /*
+  RETURN ISNULL(CONCAT('Started: ',FORMAT(CAST(@date1 as DateTime),'hh:mm:ss'), '<br/>',  
     '   Ended:  ' , FORMAT(CAST(@date2 as DateTime),'hh:mm:ss'),  '<br/>',  
     ' (',@hours, 'h:', @minutes, 'm:', @seconds, 's',')','<br/>', ' <img src="',@ImageURL,@SHOPNAME,'" width=50 height=50 [preview]=true', ' />' )
-     ,'');   
+     ,'');
+*/
+  IF LEN(@SHOPNAME) > 0
+  BEGIN
+        set @ImageFullPath =  ' <img src="' + @ImageURL+@SHOPNAME + '" width=50 height=50 />'
+    END
+    ELSE
+    BEGIN
+        set @ImageFullPath =  ' '            
+    END
+    
+    RETURN ISNULL(CONCAT('Started: ',FORMAT(CAST(@date1 as DateTime),'hh:mm:ss'), '<br/>',  
+        '   Ended:  ' , FORMAT(CAST(@date2 as DateTime),'hh:mm:ss'),  '<br/>',  
+        ' (',@hours, 'h:', @minutes, 'm:', @seconds, 's',')','<br/>',@ImageFullPath )
+         ,'');
 
     -- <p-image src="' + @ImageURL + B.SHOP_VISIT_PHOTO_NAME + '"  alt="' +A.SHOPNAME+ '" width="50" height="50" [preview]="true" />'
 

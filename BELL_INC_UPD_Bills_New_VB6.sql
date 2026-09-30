@@ -1,3 +1,4 @@
+/* 
 select * from BELL_ITEMMASTER order by actiondate desc
 select * from Bell_Cust_Master WHERE line='SAI Ram Warangal'
 select * from Bell_Cust_Master WHERE status<>'DELETED'
@@ -6,7 +7,7 @@ select * from bhavani_ER_Bills  order by actiondate desc
 -- select * FROM Bell_Cust_Master  where area in ('bazar','Nezar','Geat','Bhavani')
 -- select * from bhavani_ER_Bills  where billdate = '2025-Jan-07' AND AREA='BAZAR' AND BILLNUMBER=1  
 --update bhavani_ER_Bills  set PRATE=RATE-RATE*0.05 WHERE PRATE ISNULL  
-  
+*/  
 ALTER  procedure BELL_INC_UPD_Bills_NEW
 @AREA as varchar(30),            
 @SHOP AS VARCHAR(50),            
@@ -51,23 +52,52 @@ BEGIN
 	  begin        
 	   UPDATE BELL_ITEMMASTER SET STOCK=STOCK-@PACKETS,USERNAME=@USERNAME,ACTIONDATE=GETDATE() WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME              
 	  end        
-	  END            
+        ----- TO UPDATE STOCK IN BAZAR APPS
+      if @AREA = 'BHAVANI'  OR @AREA = 'BAZAR'  OR @AREA = 'GATE' OR  @AREA = 'NEZAR' 
+        BEGIN
+           UPDATE BAZAR_ItemMaster SET Stock = Stock + @PACKETS,
+           USERNAME=@USERNAME,ActionDate = GETDATE()  
+            WHERE Shopname=@AREA AND ITEMNAME=@ITEMNAME
+
+             if isnull(@OFFER_QTY,0) > 0 
+                begin
+                    UPDATE im SET Stock = isnull(im.Stock,0) + isnull(@OFFER_QTY,0),ActionDate = GETDATE() ,USERNAME='FROM VB SP3'
+                    FROM dbo.BAZAR_ItemMaster im WHERE im.ItemName = @OFFER_ITEM AND SHOPNAME=@AREA;
+                end
+        END
+ END            
  ELSE            
- BEGIN            
-        UPDATE bhavani_ER_Bills SET RATE=@PRICE,PACKETS=@PACKETS,QTY=@QTY,AMOUNT=@AMOUNT,USERNAME=@USERNAME          
+ BEGIN                    
+  DECLARE @PREVIOUS_PACKETS AS INTEGER ,@PREV_OFFER_PACKETS AS INTEGER
+  SELECT @PREVIOUS_PACKETS=packets FROM bhavani_ER_Bills WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME AND AREA=@AREA         
+  AND SHOPNAME=@SHOP  AND BILLNUMBER=@BILLNUMBER AND CONVERT(varchar(10),BILLDATE,101) = @BILLDATE                
+  
+  SELECT @PREV_OFFER_PACKETS=ISNULL(OFFER_QTY,0) FROM bhavani_ER_Bills WHERE ITEMNAME=@OFFER_ITEM AND AREA=@AREA         
+  AND SHOPNAME=@SHOP  AND BILLNUMBER=@BILLNUMBER AND CONVERT(varchar(10),BILLDATE,101) = @BILLDATE                
+
+  UPDATE bhavani_ER_Bills SET RATE=@PRICE,PACKETS=@PACKETS,QTY=@QTY,AMOUNT=@AMOUNT,USERNAME=@USERNAME          
   ,AREA_LINE=ISNULL(@AREA_LINE,@AREA),DAMAGES=@DAMAGES,DISCOUNT=@DISCOUNTED,
   OFFER_ITEM=@OFFER_ITEM,OFFER_RATE=@OFFER_RATE,OFFER_QTY=@OFFER_QTY,SALESMAN=@SALESMAN
   WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME AND AREA=@AREA AND SHOPNAME=@SHOP AND          
         BILLNUMBER=@BILLNUMBER AND CONVERT(varchar(10),BILLDATE,101) = @BILLDATE            
           
-  DECLARE @PREVIOUS_PACKETS AS INTEGER        
-  SELECT @PREVIOUS_PACKETS=packets FROM bhavani_ER_Bills WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME AND AREA=@AREA         
-  AND SHOPNAME=@SHOP  AND BILLNUMBER=@BILLNUMBER AND CONVERT(varchar(10),BILLDATE,101) = @BILLDATE                
-        
   if (select count(1) from Bell_Cust_Master  where line = @area  and IsForDirectSales='Y')  > 0         
   begin        
     UPDATE BELL_ITEMMASTER SET STOCK=STOCK+@PREVIOUS_PACKETS-@PACKETS,USERNAME=@USERNAME,ACTIONDATE=GETDATE() WHERE ITEMCODE=@ITEMCODE AND ITEMNAME=@ITEMNAME              
   end        
+  ----- TO UPDATE STOCK IN BAZAR APPS
+  if @AREA = 'BHAVANI'  OR @AREA = 'BAZAR'  OR @AREA = 'GATE' OR  @AREA = 'NEZAR' 
+        BEGIN
+           UPDATE BAZAR_ItemMaster SET Stock = Stock - @PREVIOUS_PACKETS + @PACKETS,
+           USERNAME=@USERNAME,ActionDate = GETDATE()  
+            WHERE Shopname=@AREA AND ITEMNAME=@ITEMNAME
+
+            if @PREV_OFFER_PACKETS > 0 OR ISNULL(@OFFER_QTY,0) > 0
+            begin
+                    UPDATE im SET Stock = isnull(im.Stock,0) - @PREV_OFFER_PACKETS + ISNULL(@OFFER_QTY,0),ActionDate = GETDATE() ,USERNAME='FROM VB SP3'
+                    FROM dbo.BAZAR_ItemMaster im WHERE im.ItemName = @OFFER_ITEM AND SHOPNAME=@AREA;
+            end
+        END
   END            
     SET @result = 1            
    SELECT @result AS RESULT            

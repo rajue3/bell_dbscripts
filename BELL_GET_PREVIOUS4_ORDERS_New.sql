@@ -190,7 +190,7 @@ BEGIN
     print @sql
     EXEC sp_executesql @sql;
 END
-ELSE  -- using in VB6
+ELSE  -- using in VB6 GET_PREVIOUS_ORDERS_WebSQL()
 BEGIN
 		print  'else part using in VB6';
 		WITH LastDates AS (
@@ -233,7 +233,7 @@ BEGIN
 			LEFT JOIN LastDates ld ON f.BillDate = ld.BillDate
 			--LEFT JOIN (SELECT ITEMNAME, QTY, ID, T_B FROM BELL_LS_ORDERS WHERE Area=@AREA AND BILLDATE=@BILLDATE) AS LS  ON im.ITEMNAME=LS.ITEMNAME 
 			Where im.STATUS='Active' and im.CATEGORY<>'RAW MATERIALS' --and f.BillDate is not null
-			GROUP BY im.ItemName,im.ItemCode,PACKINGTYPE,TOTALITEMSINPACK
+			GROUP BY im.ItemName,im.ItemCode,PACKINGTYPE,TOTALITEMSINPACK 
 			ORDER BY im.ItemCode;
 	END
 

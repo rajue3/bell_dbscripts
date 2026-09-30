@@ -215,9 +215,12 @@ BEGIN
     END
 	ELSE IF @OPTION = 'BAZAR_BILLS_COUNT'
     BEGIN
+			DECLARE @TOTAL_SALES MONEY
             WITH TAB1 AS (
             SELECT DISTINCT BILLNUMBER AS BILLS FROM Bazar_Mobile_Bills WITH (NOLOCK) where LINE=@LINE and billdate=@ORDERDATE
             GROUP BY SHOPNAME,BILLNUMBER )  
+            SELECT * FROM Bazar_Mobile_Bills
+			SELECT @TOTAL_SALES=SUM(AMOUNT) FROM Bazar_Mobile_Bills WITH (NOLOCK) where LINE=@LINE and billdate=@ORDERDATE
             
 			--SELECT @TOT_SHOPS=COUNT(1) FROM Bazar_Mobile_Bills  WITH (NOLOCK) where  LINE=@LINE AND orderdate=@ORDERDATE
 
