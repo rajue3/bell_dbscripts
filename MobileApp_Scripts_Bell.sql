@@ -9,8 +9,32 @@ select ID,LINE,AREA,SHOPNAME,CUSTOMERNAME,MOBILE,IsForDirectSales,GroupName,Cate
 SELECT CONVERT(VARCHAR(10), GETDATE(), 23) AS FormattedDate;
 --delete from BELL_APP_SHOPS_VISIT_INFO where id=30515
 SELECT SHOP_VISIT_PHOTO_NAME,* FROM BELL_APP_SHOPS_VISIT_INFO WHERE SHOP_VISIT_PHOTO_NAME<>''
-select * from BELL_CUST_MASTER where IsShopPhotoRequired='y'
-update BELL_CUST_MASTER set IsShopPhotoRequired='N' where LINE='JAGITYAL'
+select * from BELL_CUST_MASTER where IsShopPhotoRequired='n' AND LINE='MANCHERIYAL'
+select LINE,AREA,SHOPNAME,area_seq,shop_seq from BELL_CUST_MASTER where LINE='mulugu' order by area_seq,shop_seq
+
+select * from BELL_CUST_MASTER where IsShopPhotoRequired='n' AND LINE='ADILABAD'
+--update BELL_CUST_MASTER set IsShopPhotoRequired='Y' where IsShopPhotoRequired='n' AND LINE='MANCHERIYAL'
+
+--update BELL_CUST_MASTER set IsShopPhotoRequired='N' where LINE='JAGITYAL'
+SELECT * FROM BELL_APP_SHOPS_VISIT_INFO WHERE LINE='MANCHERIYAL' AND SHOP_VISIT_PHOTO_NAME <> ''
+ORDERDATE='2026-10-01' ORDER BY ORDERDATE DESC
+BALAJI MUKESH BAKERY (MNCL) (ANTRG)-01 Oct 26.jpg
+
+SELECT * FROM BELL_APP_SHOPS_VISIT_INFO WHERE LINE='KORUTLA' ORDER BY BILLING_START_DATE DESC
+update BELL_APP_SHOPS_VISIT_INFO set shop_visit_photo_name=REPLACE(REPLACE(shop_visit_photo_name,'bell_images/',''),'bell_shop_photos/','')
+where LINE='mulugu' AND ORDERDATE='2026-10-01' 
+update BELL_APP_SHOPS_VISIT_INFO set shop_visit_photo_name = '' where LINE='mulugu' AND ORDERDATE='2026-10-01' and ID in (45820,45489,45504)
+
+SELECT * FROM BELL_APP_SHOPS_VISIT_INFO WHERE LINE='mulugu' AND ORDERDATE='2026-10-01' ORDER BY BILLING_START_DATE DESC
+
+SELECT * FROM BELL_APP_SHOPS_VISIT_INFO WHERE LINE='NEKKONDA' AND ORDERDATE='2026-10-01'
+SELECT * FROM BELL_APP_SHOPS_VISIT_INFO WHERE LINE='NARSAMPET' AND ORDERDATE='2026-09-30'
+AND AREA LIKE 'AMBEDKAR %' ORDER BY ORDERDATE DESC
+bell_shop_photos/KUMARSM (ETGM) (MALAMPALLY )-01 Oct 26.jpg
+SRI MATHA KM(NRSP)(ABKC)-24-09-2026.jpg
+SRI MATHA KM(NRSP)(ABKC)-30 Sep 26.jpg
+
+ASHOK KM (MNCL) (RMGDM)-01 Oct 26.jpg
 
 SELECT * FROM BELL_APP_SHOPS_VISIT_INFO with (nolock) where  line='BAZAR DIRECT SALES' AND orderdate='2026-05-08'
 select * from bhavani_ER_Bills where area='Bazar direct sales'  order by billdate desc
@@ -80,7 +104,15 @@ select * from BELL_CUST_MASTER where LINE='WARANGAL DIRECT SALES'
 
 select * from bhavani_ER_Bills where area ='Jagityal' order by billdate desc
 
-select * from bhavani_ER_Bills where area ='bhavani' AND BILLDATE='2026-09-29' order by actiondate desc
+select * from bhavani_ER_Bills where area LIKE '%KAZIPET %'  order by actiondate desc
+select * from bhavani_ER_Bills where area LIKE 'Mulugu%' AND BILLDATE='2026-10-01' order by actiondate desc
+--delete from bhavani_ER_Bills where area LIKE 'Mulugu%' AND BILLDATE='2026-10-01' and mobileorderdate >='2026-10-04'
+--UPDATE bhavani_ER_Bills SET AREA='KAZIPET DIRECT SALES' where area='HNK PEDDAMMAGUDDA (KUMARPALLY) DIRECT SALES' AND BILLDATE='2026-09-29' 
+--UPDATE bhavani_ER_Bills SET billdate='2026-09-28' where AREA='KAZIPET DIRECT SALES' and BILLDATE='2026-09-29' 
+select * from  bhavani_ER_Bills  where AREA='KAZIPET DIRECT SALES' and BILLDATE='2026-09-29' 
+SELECT * FROM Bell_LS where area LIKE '%KAZIPET %'  order by actiondate desc
+
+select * from bhavani_ER_Bills where area LIKE 'HANAMKONDA %' AND BILLDATE='2026-09-28' order by actiondate desc
 select * from bhavani_ER_Bills where area ='bhavani' AND ITEMNAME LIKE '%RUSK 10RS%' order by actiondate desc
 
 --update bhavani_ER_Bills set AREA='BHAVANI-XX' WHERE area ='bhavani' AND BILLDATE='2026-09-10' 
@@ -146,10 +178,10 @@ select itemname, sum(packets) from bhavani_ER_Bills where area='Bhavani' AND BIL
 group by itemname,itemcode order by itemcode
 select * from bhavani_ER_Bills where area='Bhavani' AND BILLDATE='2026-09-21' order by actiondate desc
 select * from bhavani_ER_Bills where username<>'From_Mobile' and actiondate > '2026-09-19'
-
+BELL_UPD_ITEMS_SEQUENCE_JSON
 --DROP TABLE BAZAR_DAMAGE_ITEMS
-select * from DBO.BAZAR_DAMAGE_ITEMS;
---delete from DBO.BAZAR_DAMAGE_ITEMS
+select * from DBO.BAZAR_DAMAGE_ITEMS order by requested_date desc
+-- delete from DBO.BAZAR_DAMAGE_ITEMS WHERE cast(requested_date as date) = '2026-02-10'
 CREATE TABLE DBO.BAZAR_DAMAGE_ITEMS
 (ID INT IDENTITY(1,1) NOT NULL,LINE VARCHAR(50),ITEMCODE INT, ITEMNAME VARCHAR(100),
 DAM_PAK INT,Username VARCHAR(30) ,Requested_Date DATETIME,Approver VARCHAR(30),Approved_Date DATETIME NULL,[Status] VARCHAR(15),
@@ -882,6 +914,7 @@ https://bellbrand.in/bell_item_images/besto_5_rs.jpg
 ----update tblAllMasterData set FIELDVALUE='https://myorders.zionwellmark.in/Bell_Images/' where fieldtype='Bell_ImageServerURL'
 --update tblAllMasterData set FIELDVALUE='https://bellbrand.in/bell_item_images/' where fieldtype='Bell_ImageServerURL'
 --INSERT INTO tblAllMasterData(FIELDTYPE, FIELDVALUE,Description) VALUES('Bell_ImageServerURL','https://bellbrandbhavanikhara.in/bell_item_images/','for Bell Brand OLD site')
+--INSERT INTO tblAllMasterData(FIELDTYPE, FIELDVALUE,Description) VALUES('Bell_Shop_Photos_URL','https://bellbrand.in/shop_visit_photos/','for Shop Visit Photos each line')
 select * from tblItemMaster
 select * from Bell_ItemMaster where itemcode in (99,100,197,198,207,218)
 --update Bell_ItemMaster set ImageUrl='DARK FILLS 5RS.jpeg' where itemcode=197

@@ -1,3 +1,5 @@
+use bellbrand_dailycash
+go
 /*
 select distinct a.ID,a.category,a.paiddate,a.purpose,a.paidtoperson,a.amount,a.payment_mode,a.transtype,isnull(a.moredetails,'') moredetails,a.actiondate,a.username,
 		isnull(a.fileinfo,'') FileInfo,a.SEQ_NO,isnull(a.due_date,'') due_date,a.status 		from bell_dailycashflow a
@@ -39,6 +41,7 @@ SELECT b.id a.paiddate,a.purpose,b.salesman,b.partyname,b.Amount_Due from bell_d
 -- BELL_GET_CASH_TRANS_BY_DATE_NEW '17-Mar-2025','ONLINE'      
 -- BELL_GET_CASH_TRANS_BY_DATE_NEW '01-Apr-2025','OUT'      
 -- BELL_GET_CASH_TRANS_BY_DATE_NEW '02-Apr-2025','IN'      
+-- BELL_GET_CASH_TRANS_BY_DATE_NEW '01-Oct-2026','SMANLIST'
 alter PROCEDURE BELL_GET_CASH_TRANS_BY_DATE_NEW     
 @BILLDATE AS DATE,      
 @TRANSTYPE AS VARCHAR(10),      

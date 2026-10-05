@@ -4,6 +4,11 @@ BELL_UPD_ITEMS_SEQUENCE_JSON
 {"ID":0,"ItemCode":"255","ItemName":"CRUNCHY ECLAIR 1RS","MRP":"200.00","PRate":"0.00","Rate":"115.00","Rate1":"115.00","Rate2":"115.00","Qty":"","Amount":null,"ImageUrl":null,"Description":"2 Carton","TOTALITEMSINPACK":"16","TOTALITEMSINCARTON":null,"CATEGORY":"ECLAIRS","Manufacture":"Trade","PACKINGTYPE":"Carton","STOCK":0,"Cartons":0,"Packets":0,"USERNAME":null,"MinOrderAlert":2,"ActionDate":null,"TOTAL_PACKS":0,"RETURN_PACKS":0,"DAMAGE_PACKS":0,"LINE":null,"ITEM_SEQ":2014}]'
 ,'UPDATE_SEQ'
 
+BELL_UPD_ITEMS_SEQUENCE_JSON
+'[{"ITEMCODE":3,"ITEMNAME":"Alubujiya 5 RS","AVAILABLE_PAKS":"59","PACKING_QTY":"1P","QTY":"1","LINE":"BHAVANI","SALESMAN":"BELLBRAND","USERNAME":"BELLBRAND","BillDate":"2026-10-03T00:00:00","RATE":"46","STATUS":null},
+{"ITEMCODE":5,"ITEMNAME":"ABCD 5 RS","AVAILABLE_PAKS":"49","PACKING_QTY":"1P","QTY":"1","LINE":"BHAVANI","SALESMAN":"BELLBRAND","USERNAME":"BELLBRAND","BillDate":"2026-10-03T00:00:00","RATE":"46","STATUS":null}]'
+,'UPSERT_DAMAGES'
+
 */
 ALTER PROCEDURE BELL_UPD_ITEMS_SEQUENCE_JSON
     @JsonData NVARCHAR(MAX),  
@@ -26,26 +31,27 @@ BEGIN
                     LINE,  
                     ItemCode,  
                     ItemName,  
-                    Qty                     
+                    Qty,BillDate,SALESMAN
                 FROM OPENJSON(@JsonData)  
                 WITH (  
                     LINE  VARCHAR(100),  
                     ITEMCODE   INT,  
-                    ITEMNAME  VARCHAR(100),  
-                    QTY INT
+                    ITEMNAME  VARCHAR(100), QTY INT,
+                    BillDate DATETIME,SALESMAN varchar(50)
                 )  
             )  
             MERGE BAZAR_DAMAGE_ITEMS AS target  
              USING JsonData AS source  
                ON target.LINE = source.LINE  
-               AND CAST(target.REQUESTED_DATE AS DATE) = CAST(GETDATE() as Date)
+               --AND CAST(target.REQUESTED_DATE AS DATE) = CAST(GETDATE() as Date)
+               AND CAST(target.REQUESTED_DATE AS DATE) = CAST(source.BillDate as Date)
               AND target.ITEMNAME = source.ItemName  
             WHEN MATCHED THEN  
                 UPDATE SET   
-                    target.DAM_PAK = source.Qty,STATUS='SUBMITTED',target.USERNAME='Mobile App',target.ACTIONDATE = GETDATE()  
+                    target.DAM_PAK = source.Qty,STATUS='SUBMITTED',target.USERNAME=source.SALESMAN,target.ACTIONDATE = GETDATE()  
             WHEN NOT MATCHED THEN  
             INSERT (ITEMCODE,ITEMNAME,DAM_PAK,REQUESTED_DATE,LINE,USERNAME,[STATUS])   
-           VALUES(source.ItemCode,source.ItemName,source.Qty,GETDATE(),source.LINE,'Mobile App','SUBMITTED');  
+           VALUES(source.ItemCode,source.ItemName,source.Qty,source.BillDate,source.LINE,source.SALESMAN,'SUBMITTED');  
       END  
     ELSE   -- @OPTION=UPDATE_SEQ
     BEGIN
